@@ -3,10 +3,21 @@
     <div class="navbar-brand">
       <%= link_to 'PBL Assassins', root_path, class: 'navbar-brand' %>
     </div>
-    <ul class='nav navbar-nav pull-xs-right'>
-      <li class="nav-item">
-        <%= link_to 'Sign in with Google', '/auth/google_oauth2', class: "nav-link" %>
-      </li>
+    <ul class="nav navbar-nav pull-xs-right">
+      <% if current_user %>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            <%= current_user.name %>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="Preview">
+            <%= link_to 'Sign out', signout_path, method: :delete, class: 'dropdown-item' %>
+          </div>
+        </li>
+      <% else %>
+        <li class="nav-item">
+          <%= link_to 'Sign in with Google', '/auth/google_oauth2', class: 'nav-link' %>
+        </li>
+      <% end %>
     </ul>
   </div>
 </nav>
