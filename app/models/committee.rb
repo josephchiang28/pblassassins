@@ -1,7 +1,4 @@
 class Committee < ActiveRecord::Base
-  has_many :players
-  validates :name, presence: true
-
   AC = 'AC' # Advisory Committee
   CS = 'CS' # Community Service
   CO = 'CO' # Consulting
@@ -15,5 +12,4 @@ class Committee < ActiveRecord::Base
   SO = 'SO' # Social
   WD = 'WD' # Web Development
   NA = 'NA' # Not Available
-
 end
