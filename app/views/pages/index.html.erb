@@ -2,5 +2,16 @@
   <div class="container">
     <h1>Welcome to PBL Assassins!</h1>
     <p>May the odds be ever in your favor.</p>
+    <% if not current_user %>
+      <%= link_to 'Sign in with Google', '/auth/google_oauth2', class: 'btn btn-primary' %>
+    <% end %>
+    <h2>Games</h2>
+    <% @games.each do |g| %>
+      <div>
+        <%= link_to g.name, game_leaderboard_path(name: g.name), class: 'list-group-item' %>
+      </div>
+    <% end %>
   </div>
 </div>
+
+<%= render 'layouts/footer' %>

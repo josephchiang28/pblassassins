@@ -1,0 +1,22 @@
+<div id="sidebar-wrapper">
+  <ul class="sidebar-nav">
+    <li class="sidebar-brand">
+      <%= link_to @game.name, game_leaderboard_path(@game.name) %>
+    </li>
+    <li>
+      <%= link_to 'Leaderboard', game_leaderboard_path(@game.name) %>
+    </li>
+    <li>
+      <%= link_to 'Assignments', game_assignments_path(@game.name) %>
+    </li>
+    <li>
+      <%= link_to 'History', game_history_path(@game.name) %>
+    </li>
+    <li>
+      <%= link_to 'Sponsors', game_sponsors_path(@game.name) %>
+    </li>
+    <li>
+      <%= link_to 'Rules', game_rules_path(@game.name) %>
+    </li>
+  </ul>
+</div>
