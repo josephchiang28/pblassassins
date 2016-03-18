@@ -13,7 +13,8 @@ Rails.application.routes.draw do
   get '/auth/:provider/callback', to: 'sessions#create'
   delete '/signout', to: 'sessions#destroy', as: :signout
 
-  get 'games/:name' => 'games#leaderboard', as: :game_leaderboard
+  get 'games/:name' => 'games#index', as: :game_index
+  get 'games/:name/leaderboard' => 'games#leaderboard', as: :game_leaderboard
   get 'games/:name/assignments' => 'games#assignments', as: :game_assignments
   get 'games/:name/history' => 'games#history', as: :game_history
   get 'games/:name/sponsors' => 'games#sponsors', as: :game_sponsors

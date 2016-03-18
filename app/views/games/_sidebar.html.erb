@@ -1,7 +1,7 @@
 <div id="sidebar-wrapper">
   <ul class="sidebar-nav">
     <li class="sidebar-brand">
-      <%= link_to @game.name, game_leaderboard_path(@game.name) %>
+      <%= link_to @game.name, game_index_path(@game.name) %>
     </li>
     <li>
       <%= link_to 'Leaderboard', game_leaderboard_path(@game.name) %>

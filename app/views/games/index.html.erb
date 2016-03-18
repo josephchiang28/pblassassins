@@ -1,0 +1,32 @@
+<div id="wrapper">
+
+  <%= render 'games/sidebar' %>
+
+  <div id="page-content-wrapper">
+    <div class="container-fluid">
+      <h1>Game: <%= @game.name %></h1>
+      <% if current_user %>
+        <h5>Your name: <%= current_user.name %></h5>
+        <h5>Your email: <%= current_user.email %></h5>
+        <h5>Your committee: <%= @current_player.committee %></h5>
+        <h5>Your role: <%= @current_player.role %></h5>
+      <% end %>
+      <%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%>
+      <h3>All Gamemakers</h3>
+      <ul>
+        <% @gamemakers.each do |gamemaker| %>
+          <li><%= '[' + gamemaker.committee + '] ' + gamemaker.user.email %></li>
+        <% end %>
+      </ul>
+      <h3>All Assassins</h3>
+      <ul>
+        <% @assassins.each do |player| %>
+          <li><%= '[' + player.committee + '] ' + player.user.email %></li>
+        <% end %>
+      </ul>
+    </div>
+
+    <%= render 'layouts/footer' %>
+
+  </div>
+</div>

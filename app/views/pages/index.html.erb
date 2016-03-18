@@ -8,7 +8,7 @@
     <h2>Games</h2>
     <% @games.each do |g| %>
       <div>
-        <%= link_to g.name, game_leaderboard_path(name: g.name), class: 'list-group-item' %>
+        <%= link_to g.name, game_index_path(name: g.name), class: 'list-group-item' %>
       </div>
     <% end %>
   </div>
