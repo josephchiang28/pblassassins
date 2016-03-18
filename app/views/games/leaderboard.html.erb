@@ -6,12 +6,18 @@
     <div class="container-fluid">
       <h1>Leaderboard</h1>
       <%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%>
-      <h3>All Players</h3>
-      <ul>
-        <% @players.each do |player| %>
-          <li><%= player.user.email %></li>
+      <h3>Committees Ranking</h3>
+      <ol>
+        <% @committees_ranked.each do |committee_and_points| %>
+          <li><%= '[' + committee_and_points[0] + '] with ' + committee_and_points[1].to_s + ' points'%></li>
         <% end %>
-      </ul>
+      </ol>
+      <h3>Assassins Ranking</h3>
+      <ol>
+        <% @assassins_ranked.each do |assassin| %>
+          <li><%= '[' + assassin.committee + '] ' + assassin.user.email + ', with ' + assassin.points.to_s + ' points'%></li>
+        <% end %>
+      </ol>
     </div>
 
     <%= render 'layouts/footer' %>

@@ -8,7 +8,16 @@ class GamesController < ApplicationController
 
   def leaderboard
     @game = Game.where(name: params[:name]).first
-    @players = Player.where(game_id: @game.id)
+    @assassins_ranked = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN).sort_by { |p| [-1 * (p.points || 0), p.committee, p.user.email]}
+    committee_points_hash = Hash.new
+    @assassins_ranked.each do |assassin|
+      if committee_points_hash.key?(assassin.committee)
+        committee_points_hash[assassin.committee] += assassin.points
+      else
+        committee_points_hash[assassin.committee] = assassin.points
+      end
+    end
+    @committees_ranked =  committee_points_hash.sort_by{|committee, points| [points, committee]}
   end
 
   def assignments
