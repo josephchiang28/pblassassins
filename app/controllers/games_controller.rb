@@ -1,6 +1,7 @@
 class GamesController < ApplicationController
   def leaderboard
     @game = Game.where(name: params[:name]).first
+    @players = Player.where(game_id: @game.id)
   end
 
   def assignments

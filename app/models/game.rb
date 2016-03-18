@@ -1,7 +1,8 @@
 class Game < ActiveRecord::Base
   has_many :players
   has_many :assignments
-  validates :name, :status, presence: true
+  validates :name, presence: true, uniqueness: true
+  validates :status, presence: true
 
   STATUS_INACTIVE = 'inactive'    # Game not active and assignments not generated
   STATUS_PENDING = 'pending'      # Game not active and assignments generated but not confirmed

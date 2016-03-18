@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
   has_many :players
-  validates :email, presence: true
+  validates :email, presence: true, uniqueness: true
 
   # Only allow and update users that are manually entered by admin
   def self.from_omniauth(auth_hash)

@@ -6,6 +6,12 @@
     <div class="container-fluid">
       <h1>Leaderboard</h1>
       <%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%>
+      <h3>All Players</h3>
+      <ul>
+        <% @players.each do |player| %>
+          <li><%= player.user.email %></li>
+        <% end %>
+      </ul>
     </div>
 
     <%= render 'layouts/footer' %>
