@@ -23,4 +23,17 @@ class SessionsController < ApplicationController
     end
     redirect_to root_path
   end
+
+  # For testing purposes only, remove or comment out later
+  def mock_user_login
+    @user = User.where(email: params[:email]).first
+    if @user.nil?
+      flash[:warning] = 'Error: Your email ' + params[:email] + ' is not in the white list.'
+    else
+      session[:user_id] = @user.id
+      flash[:success] = 'Mocked user login of ' + @user.email
+    end
+    redirect_to root_path
+  end
+
 end

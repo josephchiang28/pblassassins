@@ -4,6 +4,15 @@
     <p>May the odds be ever in your favor.</p>
     <% if not current_user %>
       <%= link_to 'Login with Google', '/auth/google_oauth2', class: 'btn btn-primary' %>
+      <!-- For testing purposes only, remove or comment out later -->
+      <div>
+        <%= form_tag mock_user_login_path do %>
+          <%= label_tag(:email, "Email") %>
+          <%= text_field_tag(:email, nil, required: true) %>
+
+          <%= submit_tag("Mock User Login", class: 'btn btn-primary') %>
+        <% end %>
+      </div>
     <% end %>
     <h2>Games</h2>
     <% @games.each do |g| %>
