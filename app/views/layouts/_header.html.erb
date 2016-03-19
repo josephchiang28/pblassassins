@@ -9,12 +9,12 @@
           <%= current_user.name %>
         </a>
         <div class="dropdown-menu" aria-labelledby="Preview">
-          <%= link_to 'Sign out', signout_path, method: :delete, class: 'dropdown-item' %>
+          <%= link_to 'Logout', logout_path, method: :delete, class: 'dropdown-item' %>
         </div>
       </li>
     <% else %>
       <li class="nav-item">
-        <%= link_to 'Sign in with Google', '/auth/google_oauth2', class: 'nav-link' %>
+        <%= link_to 'Login with Google', '/auth/google_oauth2', class: 'nav-link' %>
       </li>
     <% end %>
   </ul>

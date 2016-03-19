@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   get 'test' => 'pages#test'
 
   get '/auth/:provider/callback', to: 'sessions#create'
-  delete '/signout', to: 'sessions#destroy', as: :signout
+  delete '/logout', to: 'sessions#destroy', as: :logout
 
   get 'games/:name' => 'games#index', as: :game_index
   get 'games/:name/leaderboard' => 'games#leaderboard', as: :game_leaderboard
