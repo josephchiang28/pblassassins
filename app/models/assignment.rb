@@ -71,14 +71,42 @@ class Assignment < ActiveRecord::Base
           player = ring[i]
           player.update(killcode: SecureRandom.base64(5)) # Should killcode be regenerated?
           target_id = ring[(i + 1) % ring.length].id # Target is next in ring, loops back to first if current player is last in ring
-          game.assignments.create(assassin_id: player.id, target_id: target_id, status: Assignment::STATUS_INACTIVE)
+          game.assignments.create!(assassin_id: player.id, target_id: target_id, status: Assignment::STATUS_INACTIVE)
         end
       rescue ActiveRecord::RecordInvalid => exception
-        p exception.message
+        p 'ERROR IN CREATE_ASSIGNMENTS_FROM_RING!!!' + exception.message
         return false
       end
     end
     return true
+  end
+
+  def self.get_ring_from_assignments(assignments)
+    # Check for assignment validity? Like length and if all belongs to same game
+    if assignments.length == 0
+      return Array.new
+    end
+    ring = Array.new
+    players = Player.where(game_id: assignments.first.game_id)
+    curr_assignment = assignments.first
+    curr_player = players.find(curr_assignment.assassin_id)
+    if curr_player.nil?
+      return nil
+    end
+    ring.append(curr_player)
+    for i in 1..assignments.length - 1
+      curr_assignment = assignments.where(assassin_id: curr_assignment.target_id).first
+      if curr_assignment.nil?
+        return nil
+      else
+        curr_player = players.find(curr_assignment.assassin_id)
+        if curr_player.nil?
+          return false
+        end
+        ring.append(curr_player)
+      end
+    end
+    return ring
   end
 
   # Generates inactive assignments only. Does not activate them.
@@ -96,6 +124,15 @@ class Assignment < ActiveRecord::Base
     else
       # do sth
       # flash[:warning] = 'Assignments not generated due to some error.'
+    end
+  end
+
+  def self.discard_old_and_activate_new_assignments(game_id)
+    assignments_old = Assignment.where(game_id: game_id, status: Assignment::STATUS_ACTIVE)
+    assignments_new = Assignment.where(game_id: game_id, status: Assignment::STATUS_INACTIVE)
+    Assignment.transaction do
+      assignments_old.update_all(status: Assignment::STATUS_DISCARDED)
+      assignments_new.update_all(status: Assignment::STATUS_ACTIVE)
     end
   end
 

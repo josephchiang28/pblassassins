@@ -3,7 +3,9 @@ class GamesController < ApplicationController
     @game = Game.where(name: params[:name]).first
     @gamemakers = Player.where(game_id: @game.id, role: Player::ROLE_GAMEMAKER).sort_by { |p| p.committee}
     @assassins = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN).sort_by { |p| p.committee}
-    @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+    if current_user
+      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+    end
   end
 
   def leaderboard

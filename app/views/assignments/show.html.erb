@@ -6,15 +6,30 @@
     <div class="container-fluid">
       <h1>Assignments</h1>
       <%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%>
-      <% if @game.is_inactive %>
-        <%= button_to 'Generate Assignments', generate_assignments_path(game_id: @game.id), class: 'btn btn-primary', id: 'menu-toggle'%>
-      <% end %>
-      <h3>All assignments</h3>
-      <ul>
-        <% @assassins_ring.each do |assassin| %>
-          <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+      <% if @current_player and @current_player.is_gamemaker %>
+        <% if @game.is_inactive %>
+          <%= button_to 'Generate Assignments', generate_assignments_path(game_id: @game.id), class: 'btn btn-primary'%>
         <% end %>
-      </ul>
+        <div class="col-sm-4">
+          <h3>Active Assignments: <%= @assignments_active_ordered_assassins.length %></h3>
+          <ul>
+            <% @assignments_active_ordered_assassins.each do |assassin| %>
+              <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+            <% end %>
+          </ul>
+        </div>
+        <div class="col-sm-4">
+          <h3>Inactive Assignments: <%= @assignments_inactive_ordered_assassins.length %></h3>
+          <% if @assignments_inactive_ordered_assassins.length > 0 %>
+            <%= button_to 'Confirm and activate assignments', activate_assignments_path(game_id: @game.id), class: 'btn btn-primary' %>
+          <% end %>
+          <ul>
+            <% @assignments_inactive_ordered_assassins.each do |assassin| %>
+              <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
     </div>
 
     <%= render 'layouts/footer' %>

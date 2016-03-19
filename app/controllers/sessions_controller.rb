@@ -10,7 +10,7 @@ class SessionsController < ApplicationController
         flash[:success] = 'Welcome, ' + @user.name
       end
     rescue Exception => e
-      puts 'SIGN IN ERROR: ' + e.message
+      puts 'LOGIN ERROR: ' + e.message
       flash[:warning] = 'Ooops. There was an error while trying to authenticate you...'
     end
     redirect_to root_path
@@ -19,7 +19,7 @@ class SessionsController < ApplicationController
   def destroy
     if current_user
       session.delete(:user_id)
-      flash[:success] = 'You have successfully signed out'
+      flash[:success] = 'You have successfully logged out'
     end
     redirect_to root_path
   end
