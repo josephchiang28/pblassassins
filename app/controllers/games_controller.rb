@@ -20,10 +20,6 @@ class GamesController < ApplicationController
     @committees_ranked =  committee_points_hash.sort_by{|committee, points| [points, committee]}
   end
 
-  def assignments
-    @game = Game.where(name: params[:name]).first
-  end
-
   def history
     @game = Game.where(name: params[:name]).first
   end

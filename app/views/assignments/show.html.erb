@@ -1,0 +1,23 @@
+<div id="wrapper">
+
+  <%= render 'games/sidebar' %>
+
+  <div id="page-content-wrapper">
+    <div class="container-fluid">
+      <h1>Assignments</h1>
+      <%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%>
+      <% if @game.is_inactive %>
+        <%= button_to 'Generate Assignments', generate_assignments_path(game_id: @game.id), class: 'btn btn-primary', id: 'menu-toggle'%>
+      <% end %>
+      <h3>All assignments</h3>
+      <ul>
+        <% @assassins_ring.each do |assassin| %>
+          <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+        <% end %>
+      </ul>
+    </div>
+
+    <%= render 'layouts/footer' %>
+
+  </div>
+</div>

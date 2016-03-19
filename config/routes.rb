@@ -15,10 +15,11 @@ Rails.application.routes.draw do
 
   get 'games/:name' => 'games#index', as: :game_index
   get 'games/:name/leaderboard' => 'games#leaderboard', as: :game_leaderboard
-  get 'games/:name/assignments' => 'games#assignments', as: :game_assignments
+  get 'games/:name/assignments' => 'assignments#show', as: :show_assignments
   get 'games/:name/history' => 'games#history', as: :game_history
   get 'games/:name/sponsors' => 'games#sponsors', as: :game_sponsors
   get 'games/:name/rules' => 'games#rules', as: :game_rules
+  post 'games/:name/generate_assignments' => 'assignments#generate_assignments', as: :generate_assignments
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
