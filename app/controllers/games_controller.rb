@@ -8,6 +8,13 @@ class GamesController < ApplicationController
     end
   end
 
+  def profile
+    @game = Game.where(name: params[:name]).first
+    if current_user
+      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+    end
+  end
+
   def leaderboard
     @game = Game.where(name: params[:name]).first
     @assassins_ranked = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN).sort_by { |p| [-1 * (p.points || 0), p.committee, p.user.email]}

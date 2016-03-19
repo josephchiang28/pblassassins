@@ -4,6 +4,9 @@
       <%= link_to @game.name, game_index_path(@game.name) %>
     </li>
     <li>
+      <%= link_to 'Profile', game_profile_path(@game.name) %>
+    </li>
+    <li>
       <%= link_to 'Leaderboard', game_leaderboard_path(@game.name) %>
     </li>
     <li>

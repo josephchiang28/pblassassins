@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   post 'games/mock_user_login', to: 'sessions#mock_user_login', as: :mock_user_login # For testing purposes only, remove or comment out later
 
   get 'games/:name' => 'games#index', as: :game_index
+  get 'games/:name/profile' => 'games#profile', as: :game_profile
   get 'games/:name/leaderboard' => 'games#leaderboard', as: :game_leaderboard
   get 'games/:name/assignments' => 'assignments#show', as: :show_assignments
   get 'games/:name/history' => 'games#history', as: :game_history

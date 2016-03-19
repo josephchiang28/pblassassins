@@ -1,0 +1,20 @@
+<div id="wrapper">
+
+  <%= render 'games/sidebar' %>
+
+  <div id="page-content-wrapper">
+    <div class="container-fluid">
+      <h1>Your Profile</h1>
+      <%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%>
+      <% if current_user %>
+        <h5>Your email: <%= current_user.email %></h5>
+        <h5>Your name: <%= current_user.name %></h5>
+        <h5>Your committee: <%= @current_player.committee %></h5>
+        <h5>Your role: <%= @current_player.role %></h5>
+      <% end %>
+    </div>
+
+    <%= render 'layouts/footer' %>
+
+  </div>
+</div>
