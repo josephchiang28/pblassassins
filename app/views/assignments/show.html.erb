@@ -5,30 +5,60 @@
   <div id="page-content-wrapper">
     <div class="container-fluid">
       <h1>Assignments</h1>
-      <%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%>
-      <% if @current_player and @current_player.is_gamemaker %>
-        <% if @game.is_inactive %>
-          <%= button_to 'Generate Assignments', generate_assignments_path(game_id: @game.id), class: 'btn btn-primary'%>
-        <% end %>
-        <div class="col-sm-4">
-          <h3>Active Assignments: <%= @assignments_active_ordered_assassins.length %></h3>
-          <ul>
-            <% @assignments_active_ordered_assassins.each do |assassin| %>
-              <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
-            <% end %>
-          </ul>
-        </div>
-        <div class="col-sm-4">
-          <h3>Inactive Assignments: <%= @assignments_inactive_ordered_assassins.length %></h3>
-          <% if @assignments_inactive_ordered_assassins.length > 0 %>
-            <%= button_to 'Confirm and activate assignments', activate_assignments_path(game_id: @game.id), class: 'btn btn-primary' %>
+      <div><%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%></div>
+      <% if @current_player %>
+
+        <% if @current_player.is_gamemaker %>
+          <% if @game.is_inactive %>
+            <%= button_to 'Generate Assignments', generate_assignments_path(game_id: @game.id), class: 'btn btn-primary'%>
           <% end %>
-          <ul>
-            <% @assignments_inactive_ordered_assassins.each do |assassin| %>
-              <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+          <div class="col-sm-4">
+            <h3>Active Assignments: <%= @assignments_active_ordered_assassins.length %></h3>
+            <ul>
+              <% @assignments_active_ordered_assassins.each do |assassin| %>
+                <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+              <% end %>
+            </ul>
+          </div>
+          <div class="col-sm-4">
+            <h3>Inactive Assignments: <%= @assignments_inactive_ordered_assassins.length %></h3>
+            <% if @assignments_inactive_ordered_assassins.length > 0 %>
+              <%= button_to 'Confirm and activate assignments', activate_assignments_path(game_id: @game.id), class: 'btn btn-primary' %>
             <% end %>
-          </ul>
-        </div>
+            <ul>
+              <% @assignments_inactive_ordered_assassins.each do |assassin| %>
+                <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+              <% end %>
+            </ul>
+          </div>
+
+        <% elsif @current_player.is_assassin %>
+
+          <div>
+          <% if @assignment.nil? %>
+            Your Target: Not Assigned
+          <% else %>
+            <button type="button" id="target-reveal" class="btn btn-secondary">Reveal Target</button>
+            <button type="button" id="target-hide" class="btn btn-secondary">Hide Target</button>
+            <% target_user = Player.find(@assignment.target_id).user %>
+            <div id="target">Your Target: <%= target_user.email %></div>
+            <h5>Perform Kill</h5>
+            <%= form_tag kill_path(game_id: @game.id, player_id: @current_player.id) do %>
+              <%= label_tag(:victim_email, 'Victim Email') %>
+              <%= text_field_tag(:victim_email, nil, required: true) %>
+
+              <%= label_tag(:killcode, 'Kill Code') %>
+              <%= text_field_tag(:killcode, nil, required: true) %>
+
+              <%= submit_tag('Forward Kill', class: 'btn btn-secondary') %>
+              <% if @assassins_alive.length > 2 %>
+                <%= submit_tag('Reverse Kill', class: 'btn btn-secondary') %>
+              <% end %>
+            <% end %>
+          <% end %>
+          </div>
+
+        <% end %>
       <% end %>
     </div>
 
@@ -36,3 +66,22 @@
 
   </div>
 </div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#target').hide(); // Initially target will be hidden
+    $('#target-hide').hide();
+
+    $('#target-reveal').click(function() {
+      $('#target-reveal').hide();
+      $('#target-hide').show();
+      $('#target').show(); // Target shows on button click
+    });
+
+    $('#target-hide').click(function() {
+      $('#target-hide').hide();
+      $('#target-reveal').show();
+      $('#target').hide(); // target hides on button click
+    });
+  });
+</script>

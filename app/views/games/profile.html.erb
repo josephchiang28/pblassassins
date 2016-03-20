@@ -11,9 +11,16 @@
         <h5>Your name: <%= current_user.name %></h5>
         <h5>Your committee: <%= @current_player.committee %></h5>
         <h5>Your role: <%= @current_player.role %></h5>
-        <button type="button" id="kill-code-reveal" class="btn btn-secondary">Reveal Kill Code</button>
-        <button type="button" id="kill-code-hide" class="btn btn-secondary">Hide Kill Code</button>
-        <div id="kill-code">Kill code: <%= @current_player.killcode%></div>
+        <% if @current_player.alive? %>
+          <h5>Your status: alive</h5>
+        <% else %>
+          <h5>Your status: dead</h5>
+        <% end %>
+        <% if @current_player.is_assassin and @current_player.alive and not @current_player.killcode.nil?%>
+          <button type="button" id="kill-code-reveal" class="btn btn-secondary">Reveal Kill Code</button>
+          <button type="button" id="kill-code-hide" class="btn btn-secondary">Hide Kill Code</button>
+          <div id="kill-code">Kill code: <%= @current_player.killcode%></div>
+        <% end %>
       <% end %>
     </div>
 

@@ -25,4 +25,9 @@ class Game < ActiveRecord::Base
     self.status == STATUS_COMPLETED
   end
 
+  def check_and_complete_game
+    if self.players.where(role: Player::ROLE_ASSASSIN, alive: true).length == 1
+      self.update(status: STATUS_COMPLETED)
+    end
+  end
 end
