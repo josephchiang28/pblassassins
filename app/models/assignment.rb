@@ -160,13 +160,13 @@ class Assignment < ActiveRecord::Base
         begin
           victim.update!(alive: false)
           if is_reverse_kill
-            assignment.update!(status: STATUS_BACKFIRED)
+            assignment.update!(status: STATUS_BACKFIRED, time_deactivated: Time.now)
             assignment_stolen = game_assignments.where(target_id: victim.id, status: STATUS_ACTIVE).first
             assignment_stolen.update!(status: STATUS_STOLEN, time_deactivated: Time.now)
             game_assignments.create!(assassin_id: assignment_stolen.assassin_id, target_id: assassin.id, status: STATUS_ACTIVE, time_activated: Time.now)
             assassin.increment!(:points, by = REVERSE_KILL_POINTS)
           else
-            assignment.update!(status: STATUS_COMPLETED)
+            assignment.update!(status: STATUS_COMPLETED, time_deactivated: Time.now)
             assignment_failed = game_assignments.where(assassin_id: victim.id, status: STATUS_ACTIVE).first
             assignment_failed.update!(status: STATUS_FAILED, time_deactivated: Time.now)
             game_assignments.create!(assassin_id: assassin.id, target_id: assignment_failed.target_id, status: STATUS_ACTIVE, time_activated: Time.now)

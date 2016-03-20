@@ -38,6 +38,7 @@ class GamesController < ApplicationController
 
   def history
     @game = Game.where(name: params[:name]).first
+    # @assignment_history = Assignment.where(status: [Assignment::STATUS_STOLEN, Assignment::STATUS_COMPLETED]).sort_by { |a| a.time_deactivated}
   end
 
   def sponsors

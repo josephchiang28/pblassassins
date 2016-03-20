@@ -7,8 +7,13 @@ class AssignmentsController < ApplicationController
         assignments_all = @game.assignments
         assignments_active = assignments_all.where(status: Assignment::STATUS_ACTIVE)
         assignments_inactive = assignments_all.where(status: Assignment::STATUS_INACTIVE)
+        assignments_old = assignments_all.where.not(status: [Assignment::STATUS_ACTIVE, Assignment::STATUS_INACTIVE]).sort_by { |a| a.time_activated}
         @assignments_active_ordered_assassins = Assignment.get_ring_from_assignments(assignments_active)
         @assignments_inactive_ordered_assassins = Assignment.get_ring_from_assignments(assignments_inactive)
+        @assignments_old_info = Array.new
+        assignments_old.each do |a|
+          @assignments_old_info.append([Player.find(a.assassin_id).user.email, Player.find(a.target_id).user.email, a.status])
+        end
       elsif @current_player.is_assassin
         @assignment = @game.assignments.where(assassin_id: @current_player.id, status: Assignment::STATUS_ACTIVE).first
         @assassins_alive = @game.players.where(role: Player::ROLE_ASSASSIN, alive: true)

@@ -12,22 +12,32 @@
           <% if @game.is_inactive %>
             <%= button_to 'Generate Assignments', generate_assignments_path(game_id: @game.id), class: 'btn btn-primary'%>
           <% end %>
-          <div class="col-sm-4">
-            <h3>Active Assignments: <%= @assignments_active_ordered_assassins.length %></h3>
-            <ul>
-              <% @assignments_active_ordered_assassins.each do |assassin| %>
-                <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+          <div class="row">
+            <div class="col-md-4">
+              <h3>Active Assignments: <%= @assignments_active_ordered_assassins.length %></h3>
+              <ul>
+                <% @assignments_active_ordered_assassins.each do |assassin| %>
+                  <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+                <% end %>
+              </ul>
+            </div>
+            <div class="col-md-4">
+              <h3>Pending Assignments: <%= @assignments_inactive_ordered_assassins.length %></h3>
+              <% if @assignments_inactive_ordered_assassins.length > 0 %>
+                <%= button_to 'Confirm and activate assignments', activate_assignments_path(game_id: @game.id), class: 'btn btn-primary' %>
               <% end %>
-            </ul>
+              <ul>
+                <% @assignments_inactive_ordered_assassins.each do |assassin| %>
+                  <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+                <% end %>
+              </ul>
+            </div>
           </div>
-          <div class="col-sm-4">
-            <h3>Inactive Assignments: <%= @assignments_inactive_ordered_assassins.length %></h3>
-            <% if @assignments_inactive_ordered_assassins.length > 0 %>
-              <%= button_to 'Confirm and activate assignments', activate_assignments_path(game_id: @game.id), class: 'btn btn-primary' %>
-            <% end %>
+          <div>
+            <h3>Old Assignments: <%= @assignments_old_info.length %></h3>
             <ul>
-              <% @assignments_inactive_ordered_assassins.each do |assassin| %>
-                <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+              <% @assignments_old_info.each do |assignment_info| %>
+                <li><%= assignment_info[0] + ' -> ' + assignment_info[1] + ' | status: ' + assignment_info[2] %></li>
               <% end %>
             </ul>
           </div>
@@ -37,7 +47,7 @@
           <div>
           <% if @assignment.nil? %>
             Your Target: Not Assigned
-          <% else %>
+          <% elsif not @game.is_completed %>
             <button type="button" id="target-reveal" class="btn btn-secondary">Reveal Target</button>
             <button type="button" id="target-hide" class="btn btn-secondary">Hide Target</button>
             <% target_user = Player.find(@assignment.target_id).user %>

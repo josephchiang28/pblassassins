@@ -7,7 +7,7 @@
       <h1>Game: <%= @game.name %></h1>
       <div><%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%></div>
       <h3>Game status: <%= @game.status %></h3>
-      <div class="col-sm-4">
+      <div class="col-md-4">
         <h3>All Assassins</h3>
         <ul>
           <% @assassins.each do |player| %>
@@ -15,7 +15,7 @@
           <% end %>
         </ul>
       </div>
-      <div class="col-sm-4">
+      <div class="col-md-4">
         <h3>All Gamemakers</h3>
         <ul>
           <% @gamemakers.each do |gamemaker| %>

@@ -6,7 +6,7 @@
     <div class="container-fluid">
       <h1>Leaderboard</h1>
       <div><%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%></div>
-      <div class="col-sm-3">
+      <div class="col-md-3">
       <h3>Committees: <%= @committees_ranked.length %></h3>
         <ol>
           <% @committees_ranked.each do |committee_and_points| %>
@@ -14,7 +14,7 @@
           <% end %>
         </ol>
       </div>
-      <div class="col-sm-4">
+      <div class="col-md-4">
         <h3>All Assassins: <%= @assassins_all_ranked.length %></h3>
         <ol>
           <% @assassins_all_ranked.each do |assassin| %>
@@ -22,7 +22,7 @@
           <% end %>
         </ol>
       </div>
-      <div class="col-sm-4">
+      <div class="col-md-4">
         <h3>Live Assassins: <%= @assassins_live_ranked.length %></h3>
         <ol>
           <% @assassins_live_ranked.each do |assassin| %>
