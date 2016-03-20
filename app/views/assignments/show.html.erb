@@ -18,7 +18,7 @@
     });
   }
 
-  $(document).ready(function() {
+  $(document).on('ready page:load', function () {
     $.ajaxSetup({
       headers: {
         'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')

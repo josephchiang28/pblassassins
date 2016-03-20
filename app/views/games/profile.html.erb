@@ -1,3 +1,22 @@
+<script type="text/javascript">
+  $(document).on('ready page:load', function () {
+    $('#kill-code').hide(); // Initially kill code will be hidden.
+    $('#kill-code-hide').hide();
+
+    $('#kill-code-reveal').click(function() {
+      $('#kill-code-reveal').hide();
+      $('#kill-code-hide').show();
+      $('#kill-code').show(); // Kill code shows on button click
+    });
+
+    $('#kill-code-hide').click(function() {
+      $('#kill-code-hide').hide();
+      $('#kill-code-reveal').show();
+      $('#kill-code').hide(); // Kill code hides on button click
+    });
+  });
+</script>
+
 <div id="wrapper">
 
   <%= render 'games/sidebar' %>
@@ -28,22 +47,3 @@
 
   </div>
 </div>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#kill-code').hide(); // Initially kill code will be hidden.
-    $('#kill-code-hide').hide();
-
-    $('#kill-code-reveal').click(function() {
-      $('#kill-code-reveal').hide();
-      $('#kill-code-hide').show();
-      $('#kill-code').show(); // Kill code shows on button click
-    });
-
-    $('#kill-code-hide').click(function() {
-      $('#kill-code-hide').hide();
-      $('#kill-code-reveal').show();
-      $('#kill-code').hide(); // Kill code hides on button click
-    });
-  });
-</script>
