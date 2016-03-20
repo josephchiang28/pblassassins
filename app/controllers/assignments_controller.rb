@@ -10,6 +10,11 @@ class AssignmentsController < ApplicationController
         assignments_old = assignments_all.where.not(status: [Assignment::STATUS_ACTIVE, Assignment::STATUS_INACTIVE]).sort_by { |a| a.time_activated}
         @assignments_active_ordered_assassins = Assignment.get_ring_from_assignments(assignments_active)
         @assignments_inactive_ordered_assassins = Assignment.get_ring_from_assignments(assignments_inactive)
+        if @game.is_pending
+          @assignments_manual_ordered_assassins = Array.new(@assignments_inactive_ordered_assassins)
+        elsif @game.is_active
+          @assignments_manual_ordered_assassins = Array.new(@assignments_active_ordered_assassins)
+        end
         @assignments_old_info = Array.new
         assignments_old.each do |a|
           @assignments_old_info.append([Player.find(a.assassin_id).user.email, Player.find(a.target_id).user.email, a.status])
@@ -34,6 +39,15 @@ class AssignmentsController < ApplicationController
   def activate_assignments
     # TODO: Need to do error handling if assignments successfully activated
     Assignment.discard_old_and_activate_new_assignments(params[:game_id])
+    redirect_to show_assignments_path
+  end
+
+  def manual_reassign
+    @game = Game.where(name: params[:name]).first
+    ring_assassin_ids = params[:ring_assassin_ids]
+    ring_assassins = ring_assassin_ids.map { |id| Player.find(id) }
+    Assignment.destroy_inactive_assignments(@game.id)
+    Assignment.create_assignments_from_ring(ring_assassins)
     redirect_to show_assignments_path
   end
 

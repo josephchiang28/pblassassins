@@ -47,13 +47,14 @@ class Assignment < ActiveRecord::Base
     return ring
   end
 
-  # Verifies if all players in ring are alive
+  # Verifies if all players in ring are alive and in same game
   def self.verify_ring(ring)
     if ring.length < 2 # Should this be 2 or 3?
       return false
     end
+    game_id = ring[0].game_id
     ring.each do |player|
-      if not player.alive?
+      if not player.alive? or player.game_id != game_id
         return false
       end
     end
@@ -71,7 +72,7 @@ class Assignment < ActiveRecord::Base
       begin
         for i in 0..ring.length-1
           player = ring[i]
-          player.update(killcode: SecureRandom.base64(5)) # Should killcode be regenerated?
+          player.update!(killcode: SecureRandom.base64(5)) # Should killcode be regenerated?
           target_id = ring[(i + 1) % ring.length].id # Target is next in ring, loops back to first if current player is last in ring
           game.assignments.create!(assassin_id: player.id, target_id: target_id, status: STATUS_INACTIVE)
         end
@@ -142,6 +143,10 @@ class Assignment < ActiveRecord::Base
         p 'ERROR: ACTIVATE ASSIGNMENTS FAILED! ' + exception.message
       end
     end
+  end
+
+  def self.destroy_inactive_assignments(game_id)
+    Assignment.where(game_id: game_id, status: Assignment::STATUS_INACTIVE).destroy_all
   end
 
   def self.register_kill(game, assassin, victim_email, killcode, is_reverse_kill)
