@@ -34,6 +34,9 @@ class GamesController < ApplicationController
       end
     end
     @committees_ranked =  committee_points_hash.sort_by{|committee, points| [points, committee]}
+    if current_user
+      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+    end
   end
 
   def history
@@ -84,9 +87,15 @@ class GamesController < ApplicationController
 
   def sponsors
     @game = Game.where(name: params[:name]).first
+    if current_user
+      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+    end
   end
 
   def rules
     @game = Game.where(name: params[:name]).first
+    if current_user
+      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+    end
   end
 end

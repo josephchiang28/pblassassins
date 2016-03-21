@@ -7,34 +7,92 @@
       <h1>Leaderboard</h1>
       <div><%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%></div>
       <div class="col-md-3">
-      <h3>Committees: <%= @committees_ranked.length %></h3>
-        <ol>
-          <% @committees_ranked.each do |committee_and_points| %>
-            <li><%= '[' + committee_and_points[0] + '] with ' + committee_and_points[1].to_s + ' points'%></li>
-          <% end %>
-        </ol>
+        <h4>Committees: <%= @committees_ranked.length %></h4>
+        <table class="table table-sm">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>Committee</th>
+            <th>Points</th>
+          </tr>
+          </thead>
+          <tbody>
+            <% for i in 0..@committees_ranked.length - 1 %>
+              <tr>
+                <th scope="row"><%= i + 1 %></th>
+                <td><%= @committees_ranked[i][0] %></td>
+                <td><%= @committees_ranked[i][1] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
       <div class="col-md-4">
         <h3>All Assassins: <%= @assassins_all_ranked.length %></h3>
-        <ol>
-          <% @assassins_all_ranked.each do |assassin| %>
-            <li><%= '[' + assassin.committee + '] ' + assassin.user.email + ', with ' + assassin.points.to_s + ' points'%></li>
+        <table class="table table-sm">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>[ __ ]</th>
+            <th>Assassin</th>
+            <th>Points</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% for i in 0..@assassins_all_ranked.length - 1 %>
+            <tr>
+              <th scope="row"><%= i + 1 %></th>
+              <td><%= '[' + @assassins_all_ranked[i].committee + ']' %></td>
+              <td><%= @assassins_all_ranked[i].user.email %></td>
+              <td><%= @assassins_all_ranked[i].points %></td>
+            </tr>
           <% end %>
-        </ol>
+          </tbody>
+        </table>
       </div>
       <div class="col-md-4">
         <h3>Live Assassins: <%= @assassins_live_ranked.length %></h3>
-        <ol>
-          <% @assassins_live_ranked.each do |assassin| %>
-            <li><%= '[' + assassin.committee + '] ' + assassin.user.email + ', with ' + assassin.points.to_s + ' points'%></li>
+        <table class="table table-sm">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>[ __ ]</th>
+            <th>Assassin</th>
+            <th>Points</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% for i in 0..@assassins_live_ranked.length - 1 %>
+            <tr>
+              <th scope="row"><%= i + 1 %></th>
+              <td><%= '[' + @assassins_live_ranked[i].committee + ']' %></td>
+              <td><%= @assassins_live_ranked[i].user.email %></td>
+              <td><%= @assassins_live_ranked[i].points %></td>
+            </tr>
           <% end %>
-        </ol>
+          </tbody>
+        </table>
         <h3>Dead Assassins: <%= @assassins_dead_ranked.length %></h3>
-        <ol>
-          <% @assassins_dead_ranked.each do |assassin| %>
-            <li><%= '[' + assassin.committee + '] ' + assassin.user.email + ', with ' + assassin.points.to_s + ' points'%></li>
+        <table class="table table-sm">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>[ __ ]</th>
+            <th>Assassin</th>
+            <th>Points</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% for i in 0..@assassins_dead_ranked.length - 1 %>
+            <tr>
+              <th scope="row"><%= i + 1 %></th>
+              <td><%= '[' + @assassins_dead_ranked[i].committee + ']' %></td>
+              <td><%= @assassins_dead_ranked[i].user.email %></td>
+              <td><%= @assassins_dead_ranked[i].points %></td>
+            </tr>
           <% end %>
-        </ol>
+          </tbody>
+        </table>
       </div>
     </div>
 

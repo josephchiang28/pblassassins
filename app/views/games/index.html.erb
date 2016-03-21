@@ -9,19 +9,29 @@
       <h3>Game status: <%= @game.status %></h3>
       <div class="col-md-4">
         <h3>All Assassins</h3>
-        <ul>
-          <% @assassins.each do |player| %>
-            <li><%= '[' + player.committee + '] ' + player.user.email %></li>
+        <table class="table table-sm">
+          <tbody>
+          <% @assassins.each do |assassin| %>
+            <tr>
+              <td><%= '[' + assassin.committee + ']' %></td>
+              <td><%= assassin.user.email %></td>
+            </tr>
           <% end %>
-        </ul>
+          </tbody>
+        </table>
       </div>
       <div class="col-md-4">
         <h3>All Gamemakers</h3>
-        <ul>
+        <table class="table table-sm">
+          <tbody>
           <% @gamemakers.each do |gamemaker| %>
-            <li><%= '[' + gamemaker.committee + '] ' + gamemaker.user.email %></li>
+            <tr>
+              <td><%= '[' + gamemaker.committee + ']' %></td>
+              <td><%= gamemaker.user.email %></td>
+            </tr>
           <% end %>
-        </ul>
+          </tbody>
+        </table>
       </div>
     </div>
 

@@ -31,12 +31,14 @@
     $('#target-reveal').click(function() {
       $('#target-reveal').hide();
       $('#target-hide').show();
+      $('#asterisks').hide();
       $('#target').show(); // Target shows on button click
     });
 
     $('#target-hide').click(function() {
       $('#target-hide').hide();
       $('#target-reveal').show();
+      $('#asterisks').show();
       $('#target').hide(); // target hides on button click
     });
 
@@ -63,22 +65,44 @@
           <div class="row">
             <div class="col-md-4">
               <h3>Active Assignments: <%= @assignments_active_ordered_assassins.length %></h3>
-              <ul>
+              <table class="table table-sm">
+                <thead>
+                <tr>
+                  <th>[ __ ]</th>
+                  <th>Assassin</th>
+                </tr>
+                </thead>
+                <tbody>
                 <% @assignments_active_ordered_assassins.each do |assassin| %>
-                  <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+                  <tr>
+                    <td><%= '[' + assassin.committee + '] ' %></td>
+                    <td><%= assassin.user.email %></td>
+                  </tr>
                 <% end %>
-              </ul>
+                </tbody>
+              </table>
             </div>
             <div class="col-md-4">
               <h3>Pending Assignments: <%= @assignments_inactive_ordered_assassins.length %></h3>
               <% if @assignments_inactive_ordered_assassins.length > 0 %>
                 <%= button_to 'Confirm and activate assignments', activate_assignments_path(game_id: @game.id), class: 'btn btn-primary' %>
               <% end %>
-              <ul>
+              <table class="table table-sm">
+                <thead>
+                <tr>
+                  <th>[ __ ]</th>
+                  <th>Assassin</th>
+                </tr>
+                </thead>
+                <tbody>
                 <% @assignments_inactive_ordered_assassins.each do |assassin| %>
-                  <li><%= '[' + assassin.committee + '] ' + assassin.user.email %></li>
+                  <tr>
+                    <td><%= '[' + assassin.committee + '] ' %></td>
+                    <td><%= assassin.user.email %></td>
+                  </tr>
                 <% end %>
-              </ul>
+                </tbody>
+              </table>
             </div>
             <div class="col-md-4">
               <h3>Manual Assignments: <%= @assignments_manual_ordered_assassins.length %></h3>
@@ -94,24 +118,38 @@
           </div>
           <div>
             <h3>Old Assignments: <%= @assignments_old_info.length %></h3>
-            <ul>
+            <table class="table table-sm">
+              <thead>
+              <tr>
+                <th>Assassin</th>
+                <th>Target</th>
+                <th>Status</th>
+              </tr>
+              </thead>
+              <tbody>
               <% @assignments_old_info.each do |assignment_info| %>
-                <li><%= assignment_info[0] + ' -> ' + assignment_info[1] + ' | status: ' + assignment_info[2] %></li>
+                <tr>
+                  <td><%= assignment_info[0] %></td>
+                  <td><%= assignment_info[1] %></td>
+                  <td><%= assignment_info[2] %></td>
+                </tr>
               <% end %>
-            </ul>
+              </tbody>
+            </table>
           </div>
 
         <% elsif @current_player.is_assassin %>
 
-          <div>
           <% if @assignment.nil? %>
-            Your Target: Not Assigned
+            <p>None available or not applicable</p>
           <% elsif not @game.is_completed %>
+            <% target_user = Player.find(@assignment.target_id).user %>
             <button type="button" id="target-reveal" class="btn btn-secondary">Reveal Target</button>
             <button type="button" id="target-hide" class="btn btn-secondary">Hide Target</button>
-            <% target_user = Player.find(@assignment.target_id).user %>
-            <div id="target">Your Target: <%= target_user.email %></div>
-            <h5>Perform Kill</h5>
+            <span id="asterisks">************</span>
+            <span id="target"><%= target_user.email %></span>
+            <br><br>
+            <h3>Perform Kill</h3>
             <%= form_tag kill_path(game_id: @game.id, player_id: @current_player.id) do %>
               <%= label_tag(:victim_email, 'Victim Email') %>
               <%= text_field_tag(:victim_email, nil, required: true) %>
@@ -125,7 +163,6 @@
               <% end %>
             <% end %>
           <% end %>
-          </div>
 
         <% end %>
       <% end %>
