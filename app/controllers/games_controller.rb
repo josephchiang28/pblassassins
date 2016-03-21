@@ -38,8 +38,49 @@ class GamesController < ApplicationController
 
   def history
     @game = Game.where(name: params[:name]).first
-    # @assignment_history = Assignment.where(status: [Assignment::STATUS_STOLEN, Assignment::STATUS_COMPLETED]).sort_by { |a| a.time_deactivated}
+    assassination_history_assignments_all = Assignment.where(game_id: @game.id,status: [Assignment::STATUS_COMPLETED, Assignment::STATUS_BACKFIRED])
+    @assassination_history_info_all = Array.new
+    @assassination_history_info_public = Array.new
+    assassination_history_assignments_all.sort_by { |a| a.time_deactivated }.each do |assassination|
+      if assassination.is_completed
+        @assassination_history_info_all.append(assassination.time_deactivated.to_s + ': ' + Player.find(assassination.assassin_id).user.email + ' forward killed ' + Player.find(assassination.target_id).user.email)
+        @assassination_history_info_public.append(assassination.time_deactivated.to_s + ': ' + Player.find(assassination.target_id).user.email)
+      else
+        @assassination_history_info_all.append(assassination.time_deactivated.to_s + ': ' + Player.find(assassination.target_id).user.email + ' reverse killed ' + Player.find(assassination.assassin_id).user.email)
+        @assassination_history_info_public.append(assassination.time_deactivated.to_s + ': ' + Player.find(assassination.assassin_id).user.email)
+      end
+    end
+    if current_user
+      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      if @current_player and @current_player.is_assassin
+        assassination_history_assignments_self = assassination_history_assignments_all.where(assassin_id: @current_player.id, status: Assignment::STATUS_COMPLETED)
+        assassination_history_assignments_self += assassination_history_assignments_all.where(target_id: @current_player.id, status: Assignment::STATUS_BACKFIRED)
+        assassination_history_assignments_self = assassination_history_assignments_self.sort_by { |a| a.time_deactivated }
+        @assassination_history_info_self = Array.new
+        assassination_history_assignments_self.each do |assassination|
+          if assassination.is_completed
+            @assassination_history_info_self.append(assassination.time_deactivated.to_s + ': Forward killed ' + Player.find(assassination.target_id).user.email)
+          else
+            @assassination_history_info_self.append(assassination.time_deactivated.to_s + ': Reverse killed ' + Player.find(assassination.assassin_id).user.email)
+          end
+        end
+      end
+      if @current_player and not @current_player.alive
+        # Find death by forward kill
+        death_assignment = assassination_history_assignments_all.where(target_id: @current_player.id, status: Assignment::STATUS_COMPLETED).first
+        if death_assignment.nil?
+          # Find death by reverse kill
+          death_assignment = assassination_history_assignments_all.where(assassin_id: @current_player.id, status: Assignment::STATUS_BACKFIRED).first
+          killer_email = Player.find(death_assignment.target_id).user.email
+          @death_info = death_assignment.time_deactivated.to_s  + ': Reverse killed by ' + killer_email
+        else
+          killer_email = Player.find(death_assignment.assassin_id).user.email
+          @death_info = death_assignment.time_deactivated.to_s  + ': Forward killed by ' + killer_email
+        end
+      end
+    end
   end
+
 
   def sponsors
     @game = Game.where(name: params[:name]).first

@@ -5,8 +5,40 @@
   <div id="page-content-wrapper">
     <div class="container-fluid">
       <h1>History</h1>
-      <%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%>
-
+      <div><%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%></div>
+      <% if current_user and @current_player %>
+        <% if @current_player.is_gamemaker %>
+          <h3>All Assassination History: <%= @assassination_history_info_all.length %></h3>
+          <ol>
+            <% @assassination_history_info_all.each do |assassination_info| %>
+              <li>
+                <%= assassination_info %>
+              </li>
+            <% end %>
+          </ol>
+        <% elsif @current_player.is_assassin %>
+          <% if not @current_player.alive %>
+            <h3>Your Death</h3>
+            <p><%= @death_info %></p>
+          <% end %>
+          <h3>Your Assassination History: <%= @assassination_history_info_self.length %></h3>
+          <ol>
+            <% @assassination_history_info_self.each do |assassination_info| %>
+              <li>
+                <%= assassination_info %>
+              </li>
+            <% end %>
+          </ol>
+        <% end %>
+      <% end %>
+      <h3>All Assassin Deaths: <%= @assassination_history_info_public.length %></h3>
+      <ol>
+        <% @assassination_history_info_public.each do |assassination_info| %>
+          <li>
+            <%= assassination_info %>
+          </li>
+        <% end %>
+      </ol>
 
     </div>
 
