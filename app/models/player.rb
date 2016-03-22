@@ -9,11 +9,11 @@ class Player < ActiveRecord::Base
   ROLE_ASSASSIN = 'assassin'   # Assassin player
 
   def is_gamemaker
-    self.role == ROLE_GAMEMAKER
+    self.role.eql?(ROLE_GAMEMAKER)
   end
 
   def is_assassin
-    self.role == ROLE_ASSASSIN
+    self.role.eql?(ROLE_ASSASSIN)
   end
 
 end

@@ -10,19 +10,19 @@ class Game < ActiveRecord::Base
   STATUS_COMPLETED = 'completed'  # Game completed
 
   def is_inactive
-    self.status == STATUS_INACTIVE
+    self.status.eql?(STATUS_INACTIVE)
   end
 
   def is_pending
-    self.status == STATUS_PENDING
+    self.status.eql?(STATUS_PENDING)
   end
 
   def is_active
-    self.status == STATUS_ACTIVE
+    self.status.eql?(STATUS_ACTIVE)
   end
 
   def is_completed
-    self.status == STATUS_COMPLETED
+    self.status.eql?(STATUS_COMPLETED)
   end
 
   def check_and_complete_game

@@ -13,31 +13,31 @@ class Assignment < ActiveRecord::Base
   REVERSE_KILL_POINTS = 2
 
   def is_inactive
-    self.status == STATUS_INACTIVE
+    self.status.eql?(STATUS_INACTIVE)
   end
 
   def is_active
-    self.status == STATUS_ACTIVE
+    self.status.eql?(STATUS_ACTIVE)
   end
 
   def is_failed
-    self.status == STATUS_FAILED
+    self.status.eql?(STATUS_FAILED)
   end
 
   def is_stolen
-    self.status == STATUS_STOLEN
+    self.status.eql?(STATUS_STOLEN)
   end
 
   def is_completed
-    self.status == STATUS_COMPLETED
+    self.status.eql?(STATUS_COMPLETED)
   end
 
   def is_backfired
-    self.status == STATUS_BACKFIRED
+    self.status.eql?(STATUS_BACKFIRED)
   end
 
   def is_discarded
-    self.status == STATUS_DISCARDED
+    self.status.eql?(STATUS_DISCARDED)
   end
 
   # Generates a directed ring (list) of assassins
