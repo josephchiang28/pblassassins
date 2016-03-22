@@ -46,11 +46,11 @@ class GamesController < ApplicationController
     @assassination_history_info_public = Array.new
     assassination_history_assignments_all.sort_by { |a| a.time_deactivated }.each do |assassination|
       if assassination.is_completed
-        @assassination_history_info_all.append(assassination.time_deactivated.to_s + ': ' + Player.find(assassination.assassin_id).user.email + ' forward killed ' + Player.find(assassination.target_id).user.email)
-        @assassination_history_info_public.append(assassination.time_deactivated.to_s + ': ' + Player.find(assassination.target_id).user.email)
+        @assassination_history_info_all.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.email, Player.find(assassination.target_id).user.email, 'forward kill'])
+        @assassination_history_info_public.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.email])
       else
-        @assassination_history_info_all.append(assassination.time_deactivated.to_s + ': ' + Player.find(assassination.target_id).user.email + ' reverse killed ' + Player.find(assassination.assassin_id).user.email)
-        @assassination_history_info_public.append(assassination.time_deactivated.to_s + ': ' + Player.find(assassination.assassin_id).user.email)
+        @assassination_history_info_all.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.email, Player.find(assassination.assassin_id).user.email, 'reverse kill'])
+        @assassination_history_info_public.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.email])
       end
     end
     if current_user
@@ -62,9 +62,9 @@ class GamesController < ApplicationController
         @assassination_history_info_self = Array.new
         assassination_history_assignments_self.each do |assassination|
           if assassination.is_completed
-            @assassination_history_info_self.append(assassination.time_deactivated.to_s + ': Forward killed ' + Player.find(assassination.target_id).user.email)
+            @assassination_history_info_self.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.email, 'forward kill'])
           else
-            @assassination_history_info_self.append(assassination.time_deactivated.to_s + ': Reverse killed ' + Player.find(assassination.assassin_id).user.email)
+            @assassination_history_info_self.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.email, 'reverse kill'])
           end
         end
       end
@@ -75,10 +75,10 @@ class GamesController < ApplicationController
           # Find death by reverse kill
           death_assignment = assassination_history_assignments_all.where(assassin_id: @current_player.id, status: Assignment::STATUS_BACKFIRED).first
           killer_email = Player.find(death_assignment.target_id).user.email
-          @death_info = death_assignment.time_deactivated.to_s  + ': Reverse killed by ' + killer_email
+          @death_info = [death_assignment.time_deactivated.to_s, killer_email, 'reverse kill']
         else
           killer_email = Player.find(death_assignment.assassin_id).user.email
-          @death_info = death_assignment.time_deactivated.to_s  + ': Forward killed by ' + killer_email
+          @death_info = [death_assignment.time_deactivated.to_s, killer_email, 'forward kill']
         end
       end
     end

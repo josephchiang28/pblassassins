@@ -9,36 +9,90 @@
       <% if current_user and @current_player %>
         <% if @current_player.is_gamemaker %>
           <h3>All Assassination History: <%= @assassination_history_info_all.length %></h3>
-          <ol>
-            <% @assassination_history_info_all.each do |assassination_info| %>
-              <li>
-                <%= assassination_info %>
-              </li>
+          <table class="table table-sm">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Time of Assassination</th>
+              <th>Killer</th>
+              <th>Victim</th>
+              <th>Direction</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% for i in 0..@assassination_history_info_all.length - 1 %>
+              <tr>
+                <th scope="row"><%= i + 1 %></th>
+                <td><%= @assassination_history_info_all[i][0] %></td>
+                <td><%= @assassination_history_info_all[i][1] %></td>
+                <td><%= @assassination_history_info_all[i][2] %></td>
+                <td><%= @assassination_history_info_all[i][3] %></td>
+              </tr>
             <% end %>
-          </ol>
+            </tbody>
+          </table>
         <% elsif @current_player.is_assassin %>
           <% if not @current_player.alive %>
             <h3>Your Death</h3>
-            <p><%= @death_info %></p>
+            <table class="table table-sm">
+              <thead>
+              <tr>
+                <th>Time of Death</th>
+                <th>Assassinated by</th>
+                <th>Direction</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td><%= @death_info[0] %></td>
+                <td><%= @death_info[1] %></td>
+                <td><%= @death_info[2] %></td>
+              </tr>
+              </tbody>
+            </table>
           <% end %>
           <h3>Your Assassination History: <%= @assassination_history_info_self.length %></h3>
-          <ol>
-            <% @assassination_history_info_self.each do |assassination_info| %>
-              <li>
-                <%= assassination_info %>
-              </li>
+          <table class="table table-sm">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Time of Assassination</th>
+              <th>Victim</th>
+              <th>Direction</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% for i in 0..@assassination_history_info_self.length - 1 %>
+              <tr>
+                <th scope="row"><%= i + 1 %></th>
+                <td><%= @assassination_history_info_self[i][0] %></td>
+                <td><%= @assassination_history_info_self[i][1] %></td>
+                <td><%= @assassination_history_info_self[i][2] %></td>
+              </tr>
             <% end %>
-          </ol>
+            </tbody>
+          </table>
         <% end %>
       <% end %>
       <h3>All Assassin Deaths: <%= @assassination_history_info_public.length %></h3>
-      <ol>
-        <% @assassination_history_info_public.each do |assassination_info| %>
-          <li>
-            <%= assassination_info %>
-          </li>
+      <table class="table table-sm">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Time of Death</th>
+          <th>Victim</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% for i in 0..@assassination_history_info_all.length - 1 %>
+          <tr>
+            <th scope="row"><%= i + 1 %></th>
+            <td><%= @assassination_history_info_public[i][0] %></td>
+            <td><%= @assassination_history_info_public[i][1] %></td>
+          </tr>
         <% end %>
-      </ol>
+        </tbody>
+      </table>
 
     </div>
 
