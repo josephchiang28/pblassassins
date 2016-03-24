@@ -14,6 +14,8 @@ class AssignmentsController < ApplicationController
           @assignments_manual_ordered_assassins = Array.new(@assignments_inactive_ordered_assassins)
         elsif @game.is_active
           @assignments_manual_ordered_assassins = Array.new(@assignments_active_ordered_assassins)
+        else
+          @assignments_manual_ordered_assassins = Array.new
         end
         @assignments_old_info = Array.new
         assignments_old.each do |a|
