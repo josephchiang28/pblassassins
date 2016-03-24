@@ -59,13 +59,17 @@
               <td>dead</td>
             <% end %>
           </tr>
-          <tr>
-            <th scope="row">Killcode</th>
-            <% if @current_player.is_assassin and @current_player.alive and not @current_player.killcode.nil?%>
-              <td id="asterisks">*******</td>
-              <td id="kill-code"><%= @current_player.killcode%></td>
-            <% end %>
-          </tr>
+          <% if @current_player.is_assassin and @current_player.alive %>
+            <tr>
+              <th scope="row">Killcode</th>
+              <% if @current_player.killcode.nil?%>
+                <td>not assigned</td>
+              <% else %>
+                <td id="asterisks">*******</td>
+                <td id="kill-code"><%= @current_player.killcode%></td>
+              <% end %>
+            </tr>
+          <% end %>
           </tbody>
         </table>
         <% if @current_player.is_assassin and @current_player.alive and not @current_player.killcode.nil?%>
