@@ -13,3 +13,10 @@ footer {
 footer small {
   float: left;
 }
+
+.padding-right-only {
+  padding-left: 0 !important;
+  padding-right: 20px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
