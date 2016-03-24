@@ -29,6 +29,8 @@ gem 'bootstrap'
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 # Use OmniAuth Google OAuth2 for user authentication
 gem 'omniauth-google-oauth2'
+# Use Rails 12factor for Rails 4 logging
+gem 'rails_12factor'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
