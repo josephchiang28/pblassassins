@@ -5,7 +5,6 @@
   <div id="page-content-wrapper">
     <div class="container-fluid">
       <h1>History</h1>
-      <div><%= link_to 'Toggle Menu', '#menu-toggle', class: 'btn btn-primary', id: 'menu-toggle'%></div>
       <% if current_user and @current_player %>
         <% if @current_player.is_gamemaker %>
           <h3>All Assassination History: <%= @assassination_history_info_all.length %></h3>
