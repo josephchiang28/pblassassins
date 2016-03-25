@@ -64,77 +64,91 @@
           <div class="row">
             <div class="col-md-4 padding-right-only">
               <h3>Active Assignments: <%= @assignments_active_ordered_assassins.length %></h3>
-              <table class="table table-sm">
-                <thead>
-                <tr>
-                  <th>[ __ ]</th>
-                  <th>Assassin</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% @assignments_active_ordered_assassins.each do |assassin| %>
+              <% if @assignments_active_ordered_assassins.length > 0 %>
+                <table class="table table-sm">
+                  <thead>
                   <tr>
-                    <td><%= '[' + assassin.committee + '] ' %></td>
-                    <td><%= assassin.user.email %></td>
+                    <th>[ __ ]</th>
+                    <th>Assassin</th>
                   </tr>
-                <% end %>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                  <% @assignments_active_ordered_assassins.each do |assassin| %>
+                    <tr>
+                      <td><%= '[' + assassin.committee + '] ' %></td>
+                      <td><%= assassin.user.email %></td>
+                    </tr>
+                  <% end %>
+                  </tbody>
+                </table>
+              <% else %>
+                <p>None available</p>
+              <% end %>
             </div>
             <div class="col-md-4 padding-right-only">
               <h3>Pending Assignments: <%= @assignments_inactive_ordered_assassins.length %></h3>
               <% if @assignments_inactive_ordered_assassins.length > 0 %>
                 <%= button_to 'Confirm and activate assignments', activate_assignments_path(game_id: @game.id), class: 'btn btn-primary' %>
+                <table class="table table-sm">
+                  <thead>
+                  <tr>
+                    <th>[ __ ]</th>
+                    <th>Assassin</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <% @assignments_inactive_ordered_assassins.each do |assassin| %>
+                    <tr>
+                      <td><%= '[' + assassin.committee + '] ' %></td>
+                      <td><%= assassin.user.email %></td>
+                    </tr>
+                  <% end %>
+                  </tbody>
+                </table>
+              <% else %>
+                <p>None available</p>
               <% end %>
+            </div>
+            <div class="col-md-4 padding-right-only">
+              <h3>Manually Reassign: <%= @assignments_manual_ordered_assassins.length %></h3>
+              <% if @assignments_manual_ordered_assassins.length > 0 %>
+                <button id='manual-reassign-btn' class='btn btn-primary'>Save to pending assignments</button>
+                <ol id="sortable-assignments" class="list-group", style="display: inline-block">
+                  <% @assignments_manual_ordered_assassins.each do |assassin| %>
+                    <li id="<%= assassin.id %>" class="list-group-item sortable-item">
+                      <%= '[' + assassin.committee + '] ' + assassin.user.email %>
+                    </li>
+                  <% end %>
+                </ol>
+              <% else %>
+                <p>None available</p>
+              <% end %>
+            </div>
+          </div>
+          <div class="row">
+            <h3>Old Assignments: <%= @assignments_old_info.length %></h3>
+            <% if @assignments_old_info.length > 0%>
               <table class="table table-sm">
                 <thead>
                 <tr>
-                  <th>[ __ ]</th>
                   <th>Assassin</th>
+                  <th>Target</th>
+                  <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
-                <% @assignments_inactive_ordered_assassins.each do |assassin| %>
+                <% @assignments_old_info.each do |assignment_info| %>
                   <tr>
-                    <td><%= '[' + assassin.committee + '] ' %></td>
-                    <td><%= assassin.user.email %></td>
+                    <td><%= assignment_info[0] %></td>
+                    <td><%= assignment_info[1] %></td>
+                    <td><%= assignment_info[2] %></td>
                   </tr>
                 <% end %>
                 </tbody>
               </table>
-            </div>
-            <div class="col-md-4 padding-right-only">
-              <h3>Manual Assignments: <%= @assignments_manual_ordered_assassins.length %></h3>
-              <button id='manual-reassign-btn' class='btn btn-primary'>Save assignments to pending</button>
-              <ol id="sortable-assignments" class="list-group", style="display: inline-block">
-                <% @assignments_manual_ordered_assassins.each do |assassin| %>
-                  <li id="<%= assassin.id %>" class="list-group-item sortable-item">
-                    <%= '[' + assassin.committee + '] ' + assassin.user.email %>
-                  </li>
-                <% end %>
-              </ol>
-            </div>
-          </div>
-          <div>
-            <h3>Old Assignments: <%= @assignments_old_info.length %></h3>
-            <table class="table table-sm">
-              <thead>
-              <tr>
-                <th>Assassin</th>
-                <th>Target</th>
-                <th>Status</th>
-              </tr>
-              </thead>
-              <tbody>
-              <% @assignments_old_info.each do |assignment_info| %>
-                <tr>
-                  <td><%= assignment_info[0] %></td>
-                  <td><%= assignment_info[1] %></td>
-                  <td><%= assignment_info[2] %></td>
-                </tr>
-              <% end %>
-              </tbody>
-            </table>
+            <% else %>
+              <p>None available</p>
+            <% end %>
           </div>
 
         <% elsif @current_player.is_assassin %>
