@@ -32,6 +32,19 @@
           </tbody>
         </table>
       </div>
+      <div class="col-md-4 padding-right-only">
+        <h3>All Spectators: <%= @spectators.length %></h3>
+        <table class="table table-sm">
+          <tbody>
+          <% @spectators.each do |spectator| %>
+            <tr>
+              <td><%= '[' + spectator.committee + ']' %></td>
+              <td><%= spectator.user.email %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <%= render 'layouts/footer' %>
