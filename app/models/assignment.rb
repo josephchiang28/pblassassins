@@ -117,17 +117,26 @@ class Assignment < ActiveRecord::Base
     @game = Game.find(game_id)
     if type.eql?('all')
       @assassins = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN)
-      @game.update(status: Game::STATUS_PENDING)
     elsif type.eql?('active_only')
       @assassins = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN, alive: true)
     end
-    ring = generate_ring(@assassins)
-    if create_assignments_from_ring(ring)
-      # do sth
-      # flash[:success] = 'Assignments successfully generated!'
-    else
-      # do sth
-      # flash[:warning] = 'Assignments not generated due to some error.'
+    Assignment.transaction do
+      begin
+        if type.eql?('all')
+          @game.update(status: Game::STATUS_PENDING)
+        end
+        Assignment.where(game_id: @game.id, status: STATUS_INACTIVE).destroy_all
+        ring = generate_ring(@assassins)
+        if create_assignments_from_ring(ring)
+          # do sth
+          # flash[:success] = 'Assignments successfully generated!'
+        else
+          # do sth
+          # flash[:warning] = 'Assignments not generated due to some error.'
+        end
+      rescue ActiveRecord::RecordInvalid => exception
+        p 'ERROR: GENERATE ASSIGNMENT FAILED! ' + exception.message
+      end
     end
   end
 

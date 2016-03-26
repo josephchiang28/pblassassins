@@ -58,8 +58,10 @@
       <% if @current_player %>
 
         <% if @current_player.is_gamemaker %>
-          <% if @game.is_inactive or @game.is_pending %>
+          <% if @game.is_inactive %>
             <%= button_to 'Generate Assignments', generate_assignments_path(game_id: @game.id), class: 'btn btn-primary'%>
+          <% elsif @game.is_pending %>
+            <%= button_to 'Regenerate Assignments', generate_assignments_path(game_id: @game.id), class: 'btn btn-primary'%>
           <% end %>
           <div class="row">
             <div class="col-md-4 padding-right-only">
