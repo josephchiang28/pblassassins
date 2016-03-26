@@ -11,7 +11,7 @@
     <li>
       <%= link_to 'Leaderboard', game_leaderboard_path(@game.name) %>
     </li>
-    <% if @current_player %>
+    <% if @current_player and not @current_player.is_spectator%>
       <li>
         <%= link_to 'Assignments', show_assignments_path(@game.name) %>
       </li>
