@@ -14,6 +14,13 @@ class GamesController < ApplicationController
     @game = Game.where(name: params[:name]).first
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      if @current_player.nil?
+        flash[:warning] = 'Your profile for the game ' + params[:name] + ' does not exist'
+        redirect_to root_path
+      end
+    else
+      flash[:warning] = 'Please sign in to view your profile'
+      redirect_to root_path
     end
   end
 
