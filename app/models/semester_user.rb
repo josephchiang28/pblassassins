@@ -1,7 +1,7 @@
 class SemesterUser < ActiveRecord::Base
 
   SPRING_2016_GAME = 'Spring 2016'
-  SPRING_2016_COMMITTEE_MEMBERS = {#Committee::AC => ['aldec777@gmail.com', 'adityasubbarao@gmail.com', 'kvyinn@gmail.com', 'davidbliu@gmail.com', 'anthonycleung415@gmail.com', 'evelynwangyen@gmail.com', 'alice.sun94@gmail.com'],
+  SPRING_2016_COMMITTEE_MEMBERS = { Committee::AC => ['aldec777@gmail.com', 'adityasubbarao@gmail.com', 'kvyinn@gmail.com', 'davidbliu@gmail.com', 'anthonycleung415@gmail.com', 'evelynwangyen@gmail.com', 'alice.sun94@gmail.com'],
                                    # Committee::EX => ['ericpark1@berkeley.edu', 'jkjhk0823@gmail.com', 'emilyyliu96@gmail.com', 'thomas.warloe@gmail.com', 'd.zhou.5521@berkeley.edu', 'ranul.edirrisinghe@berkeley.edu', 'harukoayabe@gmail.com'],
                                    # Committee::CS => ['stephanie.he@berkeley.edu', 'winkywong352@gmail.com', 'aaronchai@berkeley.edu', 'edchoi@berkeley.edu', 'wfang@berkeley.edu', 'kimberlykao@berkeley.edu', 'christine.c.shih@gmail.com', 'tang.yerong@berkeley.edu'],
                                    # Committee::CO => ['joanna_chang@berkeley.edu', 'jchen2714@berkeley.edu', 'anita.chan@berkeley.edu', 'joey.ycchoi@gmail.com', 'dion.dong@berkeley.edu', 'kevinhe0125@gmail.com', 'michaelljlee@berkeley.edu', 'cecilianatasha@berkeley.edu'],
@@ -26,8 +26,10 @@ class SemesterUser < ActiveRecord::Base
       email_list.each do |email|
         user = User.find_or_create_by(email: email)
         role = Player::ROLE_ASSASSIN
-        if committee.eql? Committee::IN
+        if committee.eql?(Committee::IN)
           role = Player::ROLE_GAMEMAKER
+        elsif committee.eql?(Committee::AC)
+          role = Player::ROLE_SPECTATOR
         end
         Player.create(user_id: user.id, game_id: game.id, role: role, alive: true, committee: committee)
       end
