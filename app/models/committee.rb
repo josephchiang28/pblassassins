@@ -1,7 +1,7 @@
 class Committee < ActiveRecord::Base
   AC = 'AC' # Advisory Committee
-  CS = 'CS' # Community Service
   CO = 'CO' # Consulting
+  CS = 'CS' # Community Service
   EX = 'EX' # Executive
   FI = 'FI' # Finance
   HT = 'HT' # Historian

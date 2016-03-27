@@ -40,10 +40,26 @@ class Assignment < ActiveRecord::Base
     self.status.eql?(STATUS_DISCARDED)
   end
 
-  # Generates a directed ring (list) of assassins
-  def self.generate_ring(players)
-    # TODO: Implement better generation algorithm
-    ring = players.shuffle
+  # Generates a directed ring (active record list) of assassins
+  def self.generate_ring(assassins, blacklist_size = 3)
+    ring = Array.new
+    committee_blacklist = Array.new # Using array instead of queue for SQL query
+    num_assassins = assassins.length
+    while ring.length < num_assassins
+      ring_ids = ring.map { |x| x.id }
+      assassins_eligible = assassins.where.not(id: ring_ids, committee: committee_blacklist)
+      while assassins_eligible.empty?
+        # In the case that assassins left to be assigned are in a committee in the blacklist
+        assassins_eligible = assassins.where.not(id: ring_ids, committee: committee_blacklist)
+        committee_blacklist.delete_at(0)
+      end
+      assassin_chosen = assassins_eligible.sample
+      ring.append(assassin_chosen)
+      committee_blacklist.append(assassin_chosen.committee)
+      while committee_blacklist.length > blacklist_size
+        committee_blacklist.delete_at(0)
+      end
+    end
     return ring
   end
 
@@ -122,19 +138,19 @@ class Assignment < ActiveRecord::Base
     end
     Assignment.transaction do
       begin
-        if type.eql?('all')
-          @game.update(status: Game::STATUS_PENDING)
-        end
         Assignment.where(game_id: @game.id, status: STATUS_INACTIVE).destroy_all
         ring = generate_ring(@assassins)
         if create_assignments_from_ring(ring)
+          if type.eql?('all')
+            @game.update(status: Game::STATUS_PENDING)
+          end
           # do sth
           # flash[:success] = 'Assignments successfully generated!'
         else
           # do sth
           # flash[:warning] = 'Assignments not generated due to some error.'
         end
-      rescue ActiveRecord::RecordInvalid => exception
+      rescue Exception => exception
         p 'ERROR: GENERATE ASSIGNMENT FAILED! ' + exception.message
       end
     end
