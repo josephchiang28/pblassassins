@@ -175,6 +175,8 @@ class Assignment < ActiveRecord::Base
   end
 
   def self.register_kill(game, assassin, victim_email, killcode, is_reverse_kill)
+    victim_email = victim_email.strip
+    killcode = killcode.strip
     game_assignments = game.assignments
     if is_reverse_kill
       assignment = game_assignments.where(target_id: assassin.id, status: STATUS_ACTIVE).first # Check if there's only 1 such assignment?
