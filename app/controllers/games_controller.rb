@@ -89,7 +89,17 @@ class GamesController < ApplicationController
     @game = Game.where(name: params[:name]).first
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      @sponsors = @game.players.where(alive: false)
     end
+  end
+  
+  def update_sponsor_points
+    @game = Game.where(name: params[:name]).first
+    if current_user
+      player = @game.players.where(id: params[:player_id]).first
+      player.update_points(params[:new_points])
+    end
+    redirect_to game_sponsors_path(@game.name)
   end
 
   def rules

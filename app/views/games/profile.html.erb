@@ -70,6 +70,12 @@
               <% end %>
             </tr>
           <% end %>
+          <% if @current_player.is_assassin and not @current_player.alive %>
+            <tr>
+              <th scope="row">Sponsor Points</th>
+              <td><%= @current_player.sponsor_points%></td>
+            </tr>
+          <% end %>
           </tbody>
         </table>
         <% if @current_player.is_assassin and @current_player.alive and not @current_player.killcode.nil?%>
