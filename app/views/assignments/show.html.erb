@@ -92,12 +92,6 @@
               <% if @assignments_inactive_ordered_assassins.length > 0 %>
                 <%= button_to 'Confirm and activate assignments', activate_assignments_path(game_id: @game.id), class: 'btn btn-primary' %>
                 <table class="table table-sm">
-                  <thead>
-                  <tr>
-                    <th>[ __ ]</th>
-                    <th>Assassin</th>
-                  </tr>
-                  </thead>
                   <tbody>
                   <% @assignments_inactive_ordered_assassins.each do |assassin| %>
                     <tr>
@@ -115,9 +109,9 @@
               <h3>Manually Reassign: <%= @assignments_manual_ordered_assassins.length %></h3>
               <% if @assignments_manual_ordered_assassins.length > 0 %>
                 <button id='manual-reassign-btn' class='btn btn-primary'>Save to pending assignments</button>
-                <ol id="sortable-assignments" class="list-group", style="display: inline-block">
+                <ol id="sortable-assignments" class="list-group" style="display: inline-block">
                   <% @assignments_manual_ordered_assassins.each do |assassin| %>
-                    <li id="<%= assassin.id %>" class="list-group-item sortable-item">
+                    <li id="<%= assassin.id %>" class="list-group-item sortable-item" style="padding-top: 4px; padding-bottom: 4px;">
                       <%= '[' + assassin.committee + '] ' + assassin.user.email %>
                     </li>
                   <% end %>
