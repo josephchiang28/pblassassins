@@ -38,6 +38,54 @@ class SemesterUser < ActiveRecord::Base
     import_users_and_players(SPRING_2016_TWO_PER_COMMITTEE, 'Spring_2016_two')
   end
 
+  def self.import_spring_2016_users_and_players_andrea
+    import_users_and_players(SPRING_2016_COMMITTEE_MEMBERS, 'Spring_2016_andrea')
+  end
+
+  def self.import_spring_2016_users_and_players_one_andrea
+    import_users_and_players(SPRING_2016_ONE_PER_COMMITTEE, 'Spring_2016_one_andrea')
+  end
+
+  def self.import_spring_2016_users_and_players_two_andrea
+    import_users_and_players(SPRING_2016_TWO_PER_COMMITTEE, 'Spring_2016_two_andrea')
+  end
+
+  def self.import_spring_2016_users_and_players_liz
+    import_users_and_players(SPRING_2016_COMMITTEE_MEMBERS, 'Spring_2016_liz')
+  end
+
+  def self.import_spring_2016_users_and_players_one_liz
+    import_users_and_players(SPRING_2016_ONE_PER_COMMITTEE, 'Spring_2016_one_liz')
+  end
+
+  def self.import_spring_2016_users_and_players_two_liz
+    import_users_and_players(SPRING_2016_TWO_PER_COMMITTEE, 'Spring_2016_two_liz')
+  end
+
+  def self.import_spring_2016_users_and_players_hammad
+    import_users_and_players(SPRING_2016_COMMITTEE_MEMBERS, 'Spring_2016_hammad')
+  end
+
+  def self.import_spring_2016_users_and_players_one_hammad
+    import_users_and_players(SPRING_2016_ONE_PER_COMMITTEE, 'Spring_2016_one_hammad')
+  end
+
+  def self.import_spring_2016_users_and_players_two_hammad
+    import_users_and_players(SPRING_2016_TWO_PER_COMMITTEE, 'Spring_2016_two_hammad')
+  end
+
+  def self.import_spring_2016_users_and_players_david
+    import_users_and_players(SPRING_2016_COMMITTEE_MEMBERS, 'Spring_2016_david')
+  end
+
+  def self.import_spring_2016_users_and_players_one_david
+    import_users_and_players(SPRING_2016_ONE_PER_COMMITTEE, 'Spring_2016_one_david')
+  end
+
+  def self.import_spring_2016_users_and_players_two_david
+    import_users_and_players(SPRING_2016_TWO_PER_COMMITTEE, 'Spring_2016_two_david')
+  end
+
 
   SPRING_2016_GAME = 'Spring_2016'
 
