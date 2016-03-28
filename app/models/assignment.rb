@@ -161,8 +161,8 @@ class Assignment < ActiveRecord::Base
     assignments_new = Assignment.where(game_id: game_id, status: STATUS_INACTIVE)
     Assignment.transaction do
       begin
-        assignments_old.update_all(status: STATUS_DISCARDED, time_deactivated: Time.now)
-        assignments_new.update_all(status: STATUS_ACTIVE, time_activated: Time.now)
+        assignments_old.update_all(status: STATUS_DISCARDED, time_deactivated: Time.current)
+        assignments_new.update_all(status: STATUS_ACTIVE, time_activated: Time.current)
         Game.find(game_id).update(status: Game::STATUS_ACTIVE)
       rescue ActiveRecord::RecordInvalid => exception
         p 'ERROR: ACTIVATE ASSIGNMENTS FAILED! ' + exception.message
@@ -192,16 +192,16 @@ class Assignment < ActiveRecord::Base
         begin
           victim.update!(alive: false)
           if is_reverse_kill
-            assignment.update!(status: STATUS_BACKFIRED, time_deactivated: Time.now)
+            assignment.update!(status: STATUS_BACKFIRED, time_deactivated: Time.current)
             assignment_stolen = game_assignments.where(target_id: victim.id, status: STATUS_ACTIVE).first
-            assignment_stolen.update!(status: STATUS_STOLEN, time_deactivated: Time.now)
-            game_assignments.create!(assassin_id: assignment_stolen.assassin_id, target_id: assassin.id, status: STATUS_ACTIVE, time_activated: Time.now)
+            assignment_stolen.update!(status: STATUS_STOLEN, time_deactivated: Time.current)
+            game_assignments.create!(assassin_id: assignment_stolen.assassin_id, target_id: assassin.id, status: STATUS_ACTIVE, time_activated: Time.current)
             assassin.increment!(:points, by = REVERSE_KILL_POINTS)
           else
-            assignment.update!(status: STATUS_COMPLETED, time_deactivated: Time.now)
+            assignment.update!(status: STATUS_COMPLETED, time_deactivated: Time.current)
             assignment_failed = game_assignments.where(assassin_id: victim.id, status: STATUS_ACTIVE).first
-            assignment_failed.update!(status: STATUS_FAILED, time_deactivated: Time.now)
-            game_assignments.create!(assassin_id: assassin.id, target_id: assignment_failed.target_id, status: STATUS_ACTIVE, time_activated: Time.now)
+            assignment_failed.update!(status: STATUS_FAILED, time_deactivated: Time.current)
+            game_assignments.create!(assassin_id: assassin.id, target_id: assignment_failed.target_id, status: STATUS_ACTIVE, time_activated: Time.current)
             assassin.increment!(:points, by = FORWARD_KILL_POINTS)
           end
         rescue ActiveRecord::RecordInvalid => exception
