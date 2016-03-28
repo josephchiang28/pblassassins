@@ -27,6 +27,8 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'bootstrap'
 # Use Sprockets Rails as required by Bootstrap 4
 gem 'sprockets-rails', :require => 'sprockets/railtie'
+# Use Tether for Bootstrap tooltips
+gem 'rails-assets-tether'
 # Use OmniAuth Google OAuth2 for user authentication
 gem 'omniauth-google-oauth2'
 # Use Rails 12factor for Rails 4 logging
