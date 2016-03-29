@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   post 'games/:name/activate_assignments' => 'assignments#activate_assignments', as: :activate_assignments
   post 'games/:name/kill' => 'assignments#kill', as: :kill
   post 'games/:name/manual_reassign' => 'assignments#manual_reassign', as: :manual_reassign
+  post 'games/:name/update_sponsor_points' => 'games#update_sponsor_points', as: :update_sponsor_points
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
