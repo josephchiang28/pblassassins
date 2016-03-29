@@ -14,7 +14,7 @@ class AssignmentsController < ApplicationController
         assignments_old = assignments_all.where.not(status: [Assignment::STATUS_ACTIVE, Assignment::STATUS_INACTIVE]).sort_by { |a| a.time_activated}
         @assignments_active_ordered_assassins = Assignment.get_ring_from_assignments(assignments_active)
         @assignments_inactive_ordered_assassins = Array.new
-        if Assignment.verify_inactive_assignments(assignments_active, assignments_inactive)
+        if @game.is_pending or Assignment.verify_inactive_assignments(assignments_active, assignments_inactive)
           @assignments_inactive_ordered_assassins = Assignment.get_ring_from_assignments(assignments_inactive)
         end
         if @game.is_pending
