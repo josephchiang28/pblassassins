@@ -156,6 +156,11 @@ class Assignment < ActiveRecord::Base
     end
   end
 
+  # Verify if inactive assignments are still valid based on active assignments
+  def self.verify_inactive_assignments(active_assignments, inactive_assignments)
+    Set.new(active_assignments.pluck(:assassin_id, :target_id)) == Set.new(inactive_assignments.pluck(:assassin_id, :target_id))
+  end
+
   def self.discard_old_and_activate_new_assignments(game_id)
     assignments_old = Assignment.where(game_id: game_id, status: STATUS_ACTIVE)
     assignments_new = Assignment.where(game_id: game_id, status: STATUS_INACTIVE)
