@@ -54,7 +54,7 @@ class GamesController < ApplicationController
         committee_points_hash[assassin.committee] = assassin.points
       end
     end
-    @committees_ranked =  committee_points_hash.sort_by{|committee, points| [points, committee]}
+    @committees_ranked =  committee_points_hash.sort_by{|committee, points| [-1 * (points || 0), committee]}
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
     end
