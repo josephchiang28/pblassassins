@@ -116,19 +116,34 @@ class GamesController < ApplicationController
       flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
       return redirect_to root_path
     end
+    @sponsors = @game.players.where(alive: false).sort_by { |p| -1 * p.sponsor_points}
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
-      @sponsors = @game.players.where(alive: false)
     end
   end
   
   def update_sponsor_points
-    @game = Game.where(name: params[:name]).first
-    if current_user
-      player = @game.players.where(id: params[:player_id]).first
-      player.update_points(params[:new_points])
+    game = Game.where(name: params[:name]).first
+    if game.nil?
+      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
+      return redirect_to root_path
     end
-    redirect_to game_sponsors_path(@game.name)
+    if current_user
+      current_player = Player.where(user_id: current_user.id, game_id: game.id).first
+      if current_player and current_player.is_gamemaker
+        sponsor = Player.find(params[:player_id])
+        if sponsor.update_sponsor_points(params[:new_points].to_i)
+          flash[:success] = 'Sponsor points successfully updated!'
+        else
+          flash[:warning] = 'Ooops, an error occurred. Sponsor points not updated.'
+        end
+      else
+        flash[:warning] = 'Ooops, you do not have permission to update sponsor points.'
+      end
+    else
+      flash[:warning] = 'Ooops, you do not have permission to update sponsor points.'
+    end
+    redirect_to game_sponsors_path(game.name)
   end
 
   def rules

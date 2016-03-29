@@ -12,7 +12,7 @@
         <tr>
           <th>Sponsor</th>
           <th>Points</th>
-          <% if @current_player.is_gamemaker %>
+          <% if @current_player and @current_player.is_gamemaker %>
             <th>Update Points</th>
           <% end %>
         </tr>
@@ -22,7 +22,7 @@
           <tr>
             <td><%= @sponsors[i].user.email %></td>
             <td><%= @sponsors[i].sponsor_points %></td>
-            <% if @current_player.is_gamemaker %>
+            <% if @current_player and @current_player.is_gamemaker %>
               <td>
                 <%= form_tag update_sponsor_points_path(name: @game.name, player_id: @sponsors[i].id) do %>
                   <%= number_field_tag(:new_points, nil, min: 0, required: true) %>

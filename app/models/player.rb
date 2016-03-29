@@ -16,23 +16,24 @@ class Player < ActiveRecord::Base
   def is_assassin
     self.role.eql?(ROLE_ASSASSIN)
   end
-  
-  def update_points(new_points)
-    new_points_int = Integer(new_points)
-    if new_points_int >= 0
-      Player.transaction do
-        begin
-          self.update!(sponsor_points: new_points_int)
-        rescue Exception => e
-          puts e.message
-          puts e.backtrace.inspect
-        end
-      end
-    end
-  end
 
   def is_spectator
     self.role.eql?(ROLE_SPECTATOR)
+  end
+
+  # Returns true if successfully updates sponsor points, false otherwise
+  def update_sponsor_points(new_points)
+    if new_points >= 0
+      begin
+        self.update!(sponsor_points: new_points)
+      rescue Exception => e
+        p 'ERROR: CANNOT UPDATE SPONSOR POINTS! ' +  e.message
+        return false
+      end
+    else
+      return false
+    end
+    true
   end
 
 end
