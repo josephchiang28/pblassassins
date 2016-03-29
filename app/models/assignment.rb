@@ -171,7 +171,7 @@ class Assignment < ActiveRecord::Base
   end
 
   def self.destroy_inactive_assignments(game_id)
-    Assignment.where(game_id: game_id, status: Assignment::STATUS_INACTIVE).destroy_all
+    Assignment.where(game_id: game_id, status: STATUS_INACTIVE).destroy_all
   end
 
   def self.register_kill(game, assassin, victim_email, killcode, is_reverse_kill)
@@ -212,9 +212,7 @@ class Assignment < ActiveRecord::Base
     else
       return false
     end
-    if game.players.where(role: Player::ROLE_ASSASSIN, alive: true).length == 1
-      game.complete_game
-    end
+    game.check_and_complete_game
     return true
   end
 
