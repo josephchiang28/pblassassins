@@ -50,25 +50,25 @@
               <th scope="row">Points</th>
               <td><%= @current_player.points %></td>
             </tr>
-          <% end %>
-          <tr>
-            <th scope="row">Status</th>
-            <% if @current_player.alive? %>
-              <td>alive</td>
-            <% else %>
-              <td>dead</td>
-            <% end %>
-          </tr>
-          <% if @current_player.is_assassin and @current_player.alive %>
             <tr>
-              <th scope="row">Killcode</th>
-              <% if @current_player.killcode.nil?%>
-                <td>not assigned</td>
+              <th scope="row">Status</th>
+              <% if @current_player.alive? %>
+                <td>alive</td>
               <% else %>
-                <td id="asterisks">*******</td>
-                <td id="kill-code"><%= @current_player.killcode%></td>
+                <td>dead</td>
               <% end %>
             </tr>
+            <% if @current_player.alive %>
+              <tr>
+                <th scope="row">Killcode</th>
+                <% if @current_player.killcode.nil?%>
+                  <td>not assigned</td>
+                <% else %>
+                  <td id="asterisks">*******</td>
+                  <td id="kill-code"><%= @current_player.killcode%></td>
+                <% end %>
+              </tr>
+            <% end %>
           <% end %>
           <% if @current_player.is_assassin and not @current_player.alive %>
             <tr>

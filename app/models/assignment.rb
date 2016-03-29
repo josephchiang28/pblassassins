@@ -40,10 +40,26 @@ class Assignment < ActiveRecord::Base
     self.status.eql?(STATUS_DISCARDED)
   end
 
-  # Generates a directed ring (list) of assassins
-  def self.generate_ring(players)
-    # TODO: Implement better generation algorithm
-    ring = players.shuffle
+  # Generates a directed ring (active record list) of assassins
+  def self.generate_ring(assassins, blacklist_size = 3)
+    ring = Array.new
+    committee_blacklist = Array.new # Using array instead of queue for SQL query
+    num_assassins = assassins.length
+    while ring.length < num_assassins
+      ring_ids = ring.map { |x| x.id }
+      assassins_eligible = assassins.where.not(id: ring_ids, committee: committee_blacklist)
+      while assassins_eligible.empty?
+        # In the case that assassins left to be assigned are in a committee in the blacklist
+        assassins_eligible = assassins.where.not(id: ring_ids, committee: committee_blacklist)
+        committee_blacklist.delete_at(0)
+      end
+      assassin_chosen = assassins_eligible.sample
+      ring.append(assassin_chosen)
+      committee_blacklist.append(assassin_chosen.committee)
+      while committee_blacklist.length > blacklist_size
+        committee_blacklist.delete_at(0)
+      end
+    end
     return ring
   end
 
@@ -117,18 +133,32 @@ class Assignment < ActiveRecord::Base
     @game = Game.find(game_id)
     if type.eql?('all')
       @assassins = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN)
-      @game.update(status: Game::STATUS_PENDING)
     elsif type.eql?('active_only')
       @assassins = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN, alive: true)
     end
-    ring = generate_ring(@assassins)
-    if create_assignments_from_ring(ring)
-      # do sth
-      # flash[:success] = 'Assignments successfully generated!'
-    else
-      # do sth
-      # flash[:warning] = 'Assignments not generated due to some error.'
+    Assignment.transaction do
+      begin
+        Assignment.where(game_id: @game.id, status: STATUS_INACTIVE).destroy_all
+        ring = generate_ring(@assassins)
+        if create_assignments_from_ring(ring)
+          if type.eql?('all')
+            @game.update(status: Game::STATUS_PENDING)
+          end
+          # do sth
+          # flash[:success] = 'Assignments successfully generated!'
+        else
+          # do sth
+          # flash[:warning] = 'Assignments not generated due to some error.'
+        end
+      rescue Exception => exception
+        p 'ERROR: GENERATE ASSIGNMENT FAILED! ' + exception.message
+      end
     end
+  end
+
+  # Verify if inactive assignments are still valid based on active assignments
+  def self.verify_inactive_assignments(active_assignments, inactive_assignments)
+    Set.new(active_assignments.pluck(:assassin_id, :target_id)) == Set.new(inactive_assignments.pluck(:assassin_id, :target_id))
   end
 
   def self.discard_old_and_activate_new_assignments(game_id)
@@ -136,8 +166,8 @@ class Assignment < ActiveRecord::Base
     assignments_new = Assignment.where(game_id: game_id, status: STATUS_INACTIVE)
     Assignment.transaction do
       begin
-        assignments_old.update_all(status: STATUS_DISCARDED, time_deactivated: Time.now)
-        assignments_new.update_all(status: STATUS_ACTIVE, time_activated: Time.now)
+        assignments_old.update_all(status: STATUS_DISCARDED, time_deactivated: Time.current)
+        assignments_new.update_all(status: STATUS_ACTIVE, time_activated: Time.current)
         Game.find(game_id).update(status: Game::STATUS_ACTIVE)
       rescue ActiveRecord::RecordInvalid => exception
         p 'ERROR: ACTIVATE ASSIGNMENTS FAILED! ' + exception.message
@@ -146,10 +176,12 @@ class Assignment < ActiveRecord::Base
   end
 
   def self.destroy_inactive_assignments(game_id)
-    Assignment.where(game_id: game_id, status: Assignment::STATUS_INACTIVE).destroy_all
+    Assignment.where(game_id: game_id, status: STATUS_INACTIVE).destroy_all
   end
 
   def self.register_kill(game, assassin, victim_email, killcode, is_reverse_kill)
+    victim_email = victim_email.strip
+    killcode = killcode.strip
     game_assignments = game.assignments
     if is_reverse_kill
       assignment = game_assignments.where(target_id: assassin.id, status: STATUS_ACTIVE).first # Check if there's only 1 such assignment?
@@ -165,16 +197,16 @@ class Assignment < ActiveRecord::Base
         begin
           victim.update!(alive: false)
           if is_reverse_kill
-            assignment.update!(status: STATUS_BACKFIRED, time_deactivated: Time.now)
+            assignment.update!(status: STATUS_BACKFIRED, time_deactivated: Time.current)
             assignment_stolen = game_assignments.where(target_id: victim.id, status: STATUS_ACTIVE).first
-            assignment_stolen.update!(status: STATUS_STOLEN, time_deactivated: Time.now)
-            game_assignments.create!(assassin_id: assignment_stolen.assassin_id, target_id: assassin.id, status: STATUS_ACTIVE, time_activated: Time.now)
+            assignment_stolen.update!(status: STATUS_STOLEN, time_deactivated: Time.current)
+            game_assignments.create!(assassin_id: assignment_stolen.assassin_id, target_id: assassin.id, status: STATUS_ACTIVE, time_activated: Time.current)
             assassin.increment!(:points, by = REVERSE_KILL_POINTS)
           else
-            assignment.update!(status: STATUS_COMPLETED, time_deactivated: Time.now)
+            assignment.update!(status: STATUS_COMPLETED, time_deactivated: Time.current)
             assignment_failed = game_assignments.where(assassin_id: victim.id, status: STATUS_ACTIVE).first
-            assignment_failed.update!(status: STATUS_FAILED, time_deactivated: Time.now)
-            game_assignments.create!(assassin_id: assassin.id, target_id: assignment_failed.target_id, status: STATUS_ACTIVE, time_activated: Time.now)
+            assignment_failed.update!(status: STATUS_FAILED, time_deactivated: Time.current)
+            game_assignments.create!(assassin_id: assassin.id, target_id: assignment_failed.target_id, status: STATUS_ACTIVE, time_activated: Time.current)
             assassin.increment!(:points, by = FORWARD_KILL_POINTS)
           end
         rescue ActiveRecord::RecordInvalid => exception
@@ -185,9 +217,7 @@ class Assignment < ActiveRecord::Base
     else
       return false
     end
-    if game.players.where(role: Player::ROLE_ASSASSIN, alive: true).length == 1
-      game.complete_game
-    end
+    game.check_and_complete_game
     return true
   end
 

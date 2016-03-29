@@ -1,22 +1,43 @@
 class GamesController < ApplicationController
   def index
     @game = Game.where(name: params[:name]).first
-    @gamemakers = Player.where(game_id: @game.id, role: Player::ROLE_GAMEMAKER).sort_by { |p| p.committee}
-    @assassins = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN).sort_by { |p| p.committee}
+    if @game.nil?
+      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
+      return redirect_to root_path
+    end
+    players = @game.players
+    @gamemakers = players.where(role: Player::ROLE_GAMEMAKER).sort_by { |p| p.committee}
+    @assassins = players.where(role: Player::ROLE_ASSASSIN).sort_by { |p| p.committee}
+    @spectators = players.where(role: Player::ROLE_SPECTATOR).sort_by { |p| p.committee}
     if current_user
-      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      @current_player = players.where(user_id: current_user.id).first
     end
   end
 
   def profile
     @game = Game.where(name: params[:name]).first
+    if @game.nil?
+      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
+      return redirect_to root_path
+    end
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      if @current_player.nil?
+        flash[:warning] = 'Error: Your profile for the game ' + params[:name] + ' does not exist.'
+        redirect_to root_path
+      end
+    else
+      flash[:warning] = 'Error: Please sign in to view your profile.'
+      redirect_to root_path
     end
   end
 
   def leaderboard
     @game = Game.where(name: params[:name]).first
+    if @game.nil?
+      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
+      return redirect_to root_path
+    end
     @assassins_all_ranked = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN).sort_by { |p| [-1 * (p.points || 0), p.committee, p.user.email]}
     @assassins_live_ranked = Array.new
     @assassins_dead_ranked = Array.new
@@ -41,6 +62,10 @@ class GamesController < ApplicationController
 
   def history
     @game = Game.where(name: params[:name]).first
+    if @game.nil?
+      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
+      return redirect_to root_path
+    end
     assassination_history_assignments_all = Assignment.where(game_id: @game.id,status: [Assignment::STATUS_COMPLETED, Assignment::STATUS_BACKFIRED])
     @assassination_history_info_all = Array.new
     @assassination_history_info_public = Array.new
@@ -87,6 +112,10 @@ class GamesController < ApplicationController
 
   def sponsors
     @game = Game.where(name: params[:name]).first
+    if @game.nil?
+      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
+      return redirect_to root_path
+    end
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
       @sponsors = @game.players.where(alive: false)
@@ -104,6 +133,10 @@ class GamesController < ApplicationController
 
   def rules
     @game = Game.where(name: params[:name]).first
+    if @game.nil?
+      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
+      return redirect_to root_path
+    end
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
     end

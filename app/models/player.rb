@@ -7,6 +7,7 @@ class Player < ActiveRecord::Base
 
   ROLE_GAMEMAKER = 'gamemaker' # Gamemaker and owner of the game
   ROLE_ASSASSIN = 'assassin'   # Assassin player
+  ROLE_SPECTATOR = 'spectator' # Spectator, not participating
 
   def is_gamemaker
     self.role.eql?(ROLE_GAMEMAKER)
@@ -29,5 +30,9 @@ class Player < ActiveRecord::Base
       end
     end
   end
-  
+
+  def is_spectator
+    self.role.eql?(ROLE_SPECTATOR)
+  end
+
 end

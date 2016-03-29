@@ -1,6 +1,10 @@
 class AssignmentsController < ApplicationController
   def show
     @game = Game.where(name: params[:name]).first
+    if @game.nil?
+      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
+      return redirect_to root_path
+    end
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
       if @current_player.is_gamemaker
@@ -9,7 +13,10 @@ class AssignmentsController < ApplicationController
         assignments_inactive = assignments_all.where(status: Assignment::STATUS_INACTIVE)
         assignments_old = assignments_all.where.not(status: [Assignment::STATUS_ACTIVE, Assignment::STATUS_INACTIVE]).sort_by { |a| a.time_activated}
         @assignments_active_ordered_assassins = Assignment.get_ring_from_assignments(assignments_active)
-        @assignments_inactive_ordered_assassins = Assignment.get_ring_from_assignments(assignments_inactive)
+        @assignments_inactive_ordered_assassins = Array.new
+        if Assignment.verify_inactive_assignments(assignments_active, assignments_inactive)
+          @assignments_inactive_ordered_assassins = Assignment.get_ring_from_assignments(assignments_inactive)
+        end
         if @game.is_pending
           @assignments_manual_ordered_assassins = Array.new(@assignments_inactive_ordered_assassins)
         elsif @game.is_active
@@ -46,8 +53,13 @@ class AssignmentsController < ApplicationController
 
   def manual_reassign
     @game = Game.where(name: params[:name]).first
+    if @game.nil?
+      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
+      return redirect_to root_path
+    end
     ring_assassin_ids = params[:ring_assassin_ids]
     ring_assassins = ring_assassin_ids.map { |id| Player.find(id) }
+    # TODO: Make sure destroy and create are in one transaction
     Assignment.destroy_inactive_assignments(@game.id)
     Assignment.create_assignments_from_ring(ring_assassins)
     redirect_to show_assignments_path
