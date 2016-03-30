@@ -1,6 +1,7 @@
 class Game < ActiveRecord::Base
   has_many :players
   has_many :assignments
+  has_many :notes
   validates :name, presence: true, uniqueness: true
   validates :status, presence: true
 
