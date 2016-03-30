@@ -117,6 +117,7 @@ class GamesController < ApplicationController
       return redirect_to root_path
     end
     @sponsors = @game.players.where(alive: false).sort_by { |p| -1 * p.sponsor_points}
+    @notes = @game.notes.order(created_at: :desc)
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
     end
