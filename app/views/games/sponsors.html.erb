@@ -50,9 +50,18 @@
           <% end %>
         </div>
         <% @notes.each do |note| %>
-          <div>
+          <% if @current_player and @current_player.is_gamemaker %>
+            <div class="row">
+              <p class="col-md-8">
+                <%=note.content%><br>Created at: <%=note.created_at%>
+              </p>
+              <div class="col-md-4">
+                <%= link_to 'Delete', delete_note_path(note_id: note.id), method: :post, class: 'btn btn-secondary',  data: { confirm: 'Are you sure to delete this note?' } %>
+              </div>
+            </div>
+          <% else %>
             <p><%=note.content%><br>Created at: <%=note.created_at%></p>
-          </div>
+          <% end %>
         <% end %>
       </div>
     </div>
