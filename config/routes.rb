@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
   get 'games/:name' => 'games#index', as: :game_index
   get 'games/:name/profile' => 'games#profile', as: :game_profile
+  get 'games/:name/news' => 'games#news', as: :game_news
   get 'games/:name/leaderboard' => 'games#leaderboard', as: :game_leaderboard
   get 'games/:name/assignments' => 'assignments#show', as: :show_assignments
   get 'games/:name/history' => 'games#history', as: :game_history

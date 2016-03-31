@@ -32,6 +32,17 @@ class GamesController < ApplicationController
     end
   end
 
+  def news
+    @game = Game.where(name: params[:name]).first
+    if @game.nil?
+      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
+      return redirect_to root_path
+    end
+    if current_user
+      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+    end
+  end
+
   def leaderboard
     @game = Game.where(name: params[:name]).first
     if @game.nil?
