@@ -38,6 +38,7 @@ class GamesController < ApplicationController
       flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
       return redirect_to root_path
     end
+    @notes = @game.notes.order(created_at: :desc)
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
     end

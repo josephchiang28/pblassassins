@@ -6,7 +6,7 @@ class NotesController < ApplicationController
       return redirect_to root_path
     end
     Note.create!(game_id: @game.id, content: params[:content])
-    redirect_to game_sponsors_path(@game.name)
+    redirect_to game_news_path(@game.name)
   end
 
   def delete
@@ -24,6 +24,6 @@ class NotesController < ApplicationController
       flash[:warning] = 'Ooops, you do not have permission to delete the note.'
       return redirect_to root_path
     end
-    redirect_to game_sponsors_path(@game.name)
+    redirect_to game_news_path(@game.name)
   end
 end

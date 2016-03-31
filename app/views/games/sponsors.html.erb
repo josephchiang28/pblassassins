@@ -5,65 +5,38 @@
   <div id="page-content-wrapper">
     <div class="container-fluid">
       <h1>Sponsors</h1>
-      <div class="col-md-6 padding-right-only">
-        <h3>Points</h3>
-        <% if @sponsors.length > 0%>
-          <table class="table table-sm">
-            <thead>
+      <h3>Points</h3>
+      <% if @sponsors.length > 0 %>
+        <table class="table table-sm">
+          <thead>
+          <tr>
+            <th>Sponsor</th>
+            <th>Points</th>
+            <% if @current_player and @current_player.is_gamemaker %>
+              <th>Update Points</th>
+            <% end %>
+          </tr>
+          </thead>
+          <tbody>
+          <% for i in 0..@sponsors.length - 1 %>
             <tr>
-              <th>Sponsor</th>
-              <th>Points</th>
+              <td><%= @sponsors[i].user.email %></td>
+              <td><%= @sponsors[i].sponsor_points %></td>
               <% if @current_player and @current_player.is_gamemaker %>
-                <th>Update Points</th>
+                <td>
+                  <%= form_tag update_sponsor_points_path(name: @game.name, player_id: @sponsors[i].id) do %>
+                    <%= number_field_tag(:new_points, nil, min: 0, required: true) %>
+                    <%= submit_tag('Update', class: 'btn btn-secondary') %>
+                  <% end %>
+                </td>
               <% end %>
             </tr>
-            </thead>
-            <tbody>
-            <% for i in 0..@sponsors.length - 1 %>
-              <tr>
-                <td><%= @sponsors[i].user.email %></td>
-                <td><%= @sponsors[i].sponsor_points %></td>
-                <% if @current_player and @current_player.is_gamemaker %>
-                  <td>
-                    <%= form_tag update_sponsor_points_path(name: @game.name, player_id: @sponsors[i].id) do %>
-                      <%= number_field_tag(:new_points, nil, min: 0, required: true) %>
-                      <%= submit_tag('Update', class: 'btn btn-secondary') %>
-                    <% end %>
-                  </td>
-                <% end %>
-              </tr>
-            <% end %>
-            </tbody>
-          </table>
-        <% else %>
-          <p>No sponsors available</p>
-        <% end %>
-      </div>
-      <div class="col-md-6 padding-right-only">
-        <h3>Notes</h3>
-        <div>
-          <% if @current_player and @current_player.is_gamemaker %>
-            <%= form_tag create_note_path do %>
-              <%= text_area_tag(:content, nil, required: true, class: 'form-control') %>
-              <%= submit_tag("Create note", class: 'btn btn-primary') %>
-            <% end %>
           <% end %>
-        </div>
-        <% @notes.each do |note| %>
-          <% if @current_player and @current_player.is_gamemaker %>
-            <div class="row">
-              <p class="col-md-8">
-                <%=note.content%><br>Created at: <%=note.created_at%>
-              </p>
-              <div class="col-md-4">
-                <%= link_to 'Delete', delete_note_path(note_id: note.id), method: :post, class: 'btn btn-secondary',  data: { confirm: 'Are you sure to delete this note?' } %>
-              </div>
-            </div>
-          <% else %>
-            <p><%=note.content%><br>Created at: <%=note.created_at%></p>
-          <% end %>
-        <% end %>
-      </div>
+          </tbody>
+        </table>
+      <% else %>
+        <p>No sponsors available</p>
+      <% end %>
     </div>
 
     <%= render 'layouts/footer' %>
