@@ -128,7 +128,7 @@ class GamesController < ApplicationController
       flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
       return redirect_to root_path
     end
-    @sponsors = @game.players.where(alive: false).sort_by { |p| -1 * p.sponsor_points}
+    @sponsors = @game.players.where('role = ? OR alive = ?', Player::ROLE_GAMEMAKER, false).sort_by { |p| [-1 * p.sponsor_points, p.user.name]}
     @notes = @game.notes.order(created_at: :desc)
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
