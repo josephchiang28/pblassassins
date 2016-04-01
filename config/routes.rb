@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
   get '/auth/:provider/callback', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy', as: :logout
-  post 'games/mock_user_login', to: 'sessions#mock_user_login', as: :mock_user_login # For testing purposes only, remove or comment out later
+  # post 'games/mock_user_login', to: 'sessions#mock_user_login', as: :mock_user_login # For testing purposes only, remove or comment out later
 
   get 'games/:name' => 'games#index', as: :game_index
   get 'games/:name/profile' => 'games#profile', as: :game_profile

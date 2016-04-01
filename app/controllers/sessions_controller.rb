@@ -25,15 +25,15 @@ class SessionsController < ApplicationController
   end
 
   # For testing purposes only, remove or comment out later
-  def mock_user_login
-    @user = User.where(name: params[:name]).first
-    if @user.nil?
-      flash[:warning] = 'Error: Your name ' + params[:name] + ' is not in the white list.'
-    else
-      session[:user_id] = @user.id
-      flash[:success] = 'Mocked user login of ' + @user.name
-    end
-    redirect_to root_path
-  end
+  # def mock_user_login
+  #   @user = User.where(name: params[:name]).first
+  #   if @user.nil?
+  #     flash[:warning] = 'Error: Your name ' + params[:name] + ' is not in the white list.'
+  #   else
+  #     session[:user_id] = @user.id
+  #     flash[:success] = 'Mocked user login of ' + @user.name
+  #   end
+  #   redirect_to root_path
+  # end
 
 end

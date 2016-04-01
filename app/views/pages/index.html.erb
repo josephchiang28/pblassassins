@@ -5,14 +5,14 @@
     <% if not current_user %>
       <%= link_to 'Login with Google', '/auth/google_oauth2', class: 'btn btn-primary' %>
       <!-- For testing purposes only, remove or comment out later -->
-      <div>
-        <%= form_tag mock_user_login_path do %>
-          <%= label_tag(:name, 'Name') %>
-          <%= text_field_tag(:name, nil, required: true) %>
+      <!--<div>-->
+        <!--<%#= form_tag mock_user_login_path do %>-->
+          <!--<%#= label_tag(:name, 'Name') %>-->
+          <!--<%#= text_field_tag(:name, nil, required: true) %>-->
 
-          <%= submit_tag('Mock User Login', class: 'btn btn-primary') %>
-        <% end %>
-      </div>
+          <!--<%#= submit_tag('Mock User Login', class: 'btn btn-primary') %>-->
+        <!--<%# end %>-->
+      <!--</div>-->
     <% end %>
     <h2>Games</h2>
     <% @games.each do |g| %>
