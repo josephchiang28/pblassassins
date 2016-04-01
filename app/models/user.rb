@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
   def self.from_omniauth(auth_hash)
     user = User.where(email: auth_hash.info.email).first
     if not user.nil?
-      user.name = auth_hash.info.name
+      # user.name = auth_hash.info.name
       user.provider = auth_hash.provider
       user.uid = auth_hash.uid
       user.save!

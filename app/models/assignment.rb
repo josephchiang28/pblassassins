@@ -179,8 +179,8 @@ class Assignment < ActiveRecord::Base
     Assignment.where(game_id: game_id, status: STATUS_INACTIVE).destroy_all
   end
 
-  def self.register_kill(game, assassin, victim_email, killcode, is_reverse_kill)
-    victim_email = victim_email.strip
+  def self.register_kill(game, assassin, victim_name, killcode, is_reverse_kill)
+    victim_name = victim_name.strip
     killcode = killcode.strip
     game_assignments = game.assignments
     if is_reverse_kill
@@ -191,7 +191,7 @@ class Assignment < ActiveRecord::Base
       victim = Player.find(assignment.target_id) # Check if victim is found?
     end
 
-    if victim.user.email.eql?(victim_email) and killcode.eql?(victim.killcode)
+    if victim.user.name.eql?(victim_name) and killcode.eql?(victim.killcode)
       # Update players and game status
       Assignment.transaction do
         begin

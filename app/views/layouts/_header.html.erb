@@ -6,7 +6,7 @@
     <% if current_user %>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-          <%= current_user.email %>
+          <%= current_user.name %>
         </a>
         <div class="dropdown-menu" aria-labelledby="Preview">
           <%= link_to 'Logout', logout_path, method: :delete, class: 'dropdown-item' %>

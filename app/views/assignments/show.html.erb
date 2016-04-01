@@ -78,7 +78,7 @@
                   <% @assignments_active_ordered_assassins.each do |assassin| %>
                     <tr>
                       <td><%= '[' + assassin.committee + '] ' %></td>
-                      <td><%= assassin.user.email %></td>
+                      <td><%= assassin.user.name %></td>
                     </tr>
                   <% end %>
                   </tbody>
@@ -96,7 +96,7 @@
                   <% @assignments_inactive_ordered_assassins.each do |assassin| %>
                     <tr>
                       <td><%= '[' + assassin.committee + '] ' %></td>
-                      <td><%= assassin.user.email %></td>
+                      <td><%= assassin.user.name %></td>
                     </tr>
                   <% end %>
                   </tbody>
@@ -112,7 +112,7 @@
                 <ol id="sortable-assignments" class="list-group" style="display: inline-block">
                   <% @assignments_manual_ordered_assassins.each do |assassin| %>
                     <li id="<%= assassin.id %>" class="list-group-item sortable-item" style="padding-top: 4px; padding-bottom: 4px;">
-                      <%= '[' + assassin.committee + '] ' + assassin.user.email %>
+                      <%= '[' + assassin.committee + '] ' + assassin.user.name %>
                     </li>
                   <% end %>
                 </ol>
@@ -156,12 +156,12 @@
             <button type="button" id="target-reveal" class="btn btn-secondary">Reveal Target</button>
             <button type="button" id="target-hide" class="btn btn-secondary">Hide Target</button>
             <span id="asterisks">************</span>
-            <span id="target"><%= target_user.email %></span>
+            <span id="target"><%= target_user.name %></span>
             <br><br>
             <h3>Perform Kill</h3>
             <%= form_tag kill_path(game_id: @game.id, player_id: @current_player.id) do %>
-              <%= label_tag(:victim_email, 'Victim Email') %>
-              <%= text_field_tag(:victim_email, nil, required: true) %>
+              <%= label_tag(:victim_name, 'Victim Name') %>
+              <%= text_field_tag(:victim_name, nil, required: true) %>
 
               <%= label_tag(:killcode, 'Kill Code') %>
               <%= text_field_tag(:killcode, nil, required: true) %>

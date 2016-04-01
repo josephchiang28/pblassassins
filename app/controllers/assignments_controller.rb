@@ -26,7 +26,7 @@ class AssignmentsController < ApplicationController
         end
         @assignments_old_info = Array.new
         assignments_old.each do |a|
-          @assignments_old_info.append([Player.find(a.assassin_id).user.email, Player.find(a.target_id).user.email, a.status])
+          @assignments_old_info.append([Player.find(a.assassin_id).user.name, Player.find(a.target_id).user.name, a.status])
         end
       elsif @current_player.is_assassin
         @assignment = @game.assignments.where(assassin_id: @current_player.id, status: Assignment::STATUS_ACTIVE).first
@@ -73,7 +73,7 @@ class AssignmentsController < ApplicationController
     if params[:commit] == 'Reverse Kill'
       is_reverse_kill = true
     end
-    if Assignment.register_kill(game, assassin, params[:victim_email], params[:killcode], is_reverse_kill)
+    if Assignment.register_kill(game, assassin, params[:victim_name], params[:killcode], is_reverse_kill)
       if game.is_completed
         flash[:success] = 'Kill code confirmed. Congratulations, you are the last surviving assassin!'
       elsif is_reverse_kill

@@ -13,7 +13,7 @@
           <% @assassins.each do |assassin| %>
             <tr>
               <td><%= '[' + assassin.committee + ']' %></td>
-              <td><%= assassin.user.email %></td>
+              <td><%= assassin.user.name %></td>
             </tr>
           <% end %>
           </tbody>
@@ -26,7 +26,7 @@
           <% @gamemakers.each do |gamemaker| %>
             <tr>
               <td><%= '[' + gamemaker.committee + ']' %></td>
-              <td><%= gamemaker.user.email %></td>
+              <td><%= gamemaker.user.name %></td>
             </tr>
           <% end %>
           </tbody>
@@ -39,7 +39,7 @@
           <% @spectators.each do |spectator| %>
             <tr>
               <td><%= '[' + spectator.committee + ']' %></td>
-              <td><%= spectator.user.email %></td>
+              <td><%= spectator.user.name %></td>
             </tr>
           <% end %>
           </tbody>

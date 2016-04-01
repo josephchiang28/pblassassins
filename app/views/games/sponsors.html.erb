@@ -20,7 +20,7 @@
             <tbody>
             <% for i in 0..@sponsors.length - 1 %>
               <tr>
-                <td><%= @sponsors[i].user.email %></td>
+                <td><%= @sponsors[i].user.name %></td>
                 <td><%= @sponsors[i].sponsor_points %></td>
                 <% if @current_player and @current_player.is_gamemaker %>
                   <td>

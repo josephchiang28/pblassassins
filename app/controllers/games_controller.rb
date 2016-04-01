@@ -50,7 +50,7 @@ class GamesController < ApplicationController
       flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
       return redirect_to root_path
     end
-    @assassins_all_ranked = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN).sort_by { |p| [-1 * (p.points || 0), p.committee, p.user.email]}
+    @assassins_all_ranked = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN).sort_by { |p| [-1 * (p.points || 0), p.committee, p.user.name]}
     @assassins_live_ranked = Array.new
     @assassins_dead_ranked = Array.new
     committee_points_hash = Hash.new
@@ -83,11 +83,11 @@ class GamesController < ApplicationController
     @assassination_history_info_public = Array.new
     assassination_history_assignments_all.sort_by { |a| a.time_deactivated }.each do |assassination|
       if assassination.is_completed
-        @assassination_history_info_all.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.email, Player.find(assassination.target_id).user.email, 'forward kill'])
-        @assassination_history_info_public.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.email])
+        @assassination_history_info_all.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.name, Player.find(assassination.target_id).user.name, 'forward kill'])
+        @assassination_history_info_public.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.name])
       else
-        @assassination_history_info_all.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.email, Player.find(assassination.assassin_id).user.email, 'reverse kill'])
-        @assassination_history_info_public.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.email])
+        @assassination_history_info_all.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.name, Player.find(assassination.assassin_id).user.name, 'reverse kill'])
+        @assassination_history_info_public.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.name])
       end
     end
     if current_user
@@ -99,9 +99,9 @@ class GamesController < ApplicationController
         @assassination_history_info_self = Array.new
         assassination_history_assignments_self.each do |assassination|
           if assassination.is_completed
-            @assassination_history_info_self.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.email, 'forward kill'])
+            @assassination_history_info_self.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.name, 'forward kill'])
           else
-            @assassination_history_info_self.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.email, 'reverse kill'])
+            @assassination_history_info_self.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.name, 'reverse kill'])
           end
         end
       end
@@ -111,11 +111,11 @@ class GamesController < ApplicationController
         if death_assignment.nil?
           # Find death by reverse kill
           death_assignment = assassination_history_assignments_all.where(assassin_id: @current_player.id, status: Assignment::STATUS_BACKFIRED).first
-          killer_email = Player.find(death_assignment.target_id).user.email
-          @death_info = [death_assignment.time_deactivated.to_s, killer_email, 'reverse kill']
+          killer_name = Player.find(death_assignment.target_id).user.name
+          @death_info = [death_assignment.time_deactivated.to_s, killer_name, 'reverse kill']
         else
-          killer_email = Player.find(death_assignment.assassin_id).user.email
-          @death_info = [death_assignment.time_deactivated.to_s, killer_email, 'forward kill']
+          killer_name = Player.find(death_assignment.assassin_id).user.name
+          @death_info = [death_assignment.time_deactivated.to_s, killer_name, 'forward kill']
         end
       end
     end
