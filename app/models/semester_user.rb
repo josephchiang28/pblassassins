@@ -11,6 +11,7 @@ class SemesterUser < ActiveRecord::Base
         committee_members_hash.each do |committee, email_list|
           email_list.each do |email|
             user = User.find_or_create_by(email: email)
+            user.update(name: EMAIL_NAME_HASH[email])
             role = Player::ROLE_ASSASSIN
             if committee.eql?(Committee::IN)
               role = Player::ROLE_GAMEMAKER
@@ -87,5 +88,32 @@ class SemesterUser < ActiveRecord::Base
       Committee::PB => ['acwu15@berkeley.edu', 'cyuan@berkeley.edu'],
       Committee::SO => ['chuang22@berkeley.edu', 'lucinda.tao@hotmail.com'],
       Committee::WD => ['josephchiang28@gmail.com', 'dakeying@gmail.com']
+  }
+
+  # For now contains only spring 2016
+  EMAIL_NAME_HASH = {
+      'aldec777@gmail.com' => 'Albert Lin', 'adityasubbarao@gmail.com' => 'Aditya Subbarao', 'kvyinn@gmail.com' => 'Kevin Yin', 'davidbliu@gmail.com' => 'David Liu',
+      'anthonycleung415@gmail.com' => 'Anthony Leung', 'evelynwangyen@gmail.com' => 'Evelyn Wang', 'alice.sun94@gmail.com' => 'Alice Sun',
+      'joanna_chang@berkeley.edu' => 'Joanna Chang', 'jchen2714@berkeley.edu' => 'Jerry Chen', 'joey.ycchoi@gmail.com' => 'Joey Choi', 'cecilianatasha@berkeley.edu' => 'Cecilia Natasha',
+      'michaelljlee@berkeley.edu' => 'Michael Lee', 'kevinhe0125@gmail.com' => 'Kevin He', 'dion.dong@berkeley.edu' => 'Dion Dong', 'anita.chan@berkeley.edu' => 'Anita Chan',
+      'kimberlykao@berkeley.edu' => 'Kimberly Kao', 'aaronchai@berkeley.edu' => 'Aaron Chai', 'stephanie.he@berkeley.edu' => 'Stephanie He', 'winkywong352@gmail.com' => 'Winky Wong',
+      'tang.yerong@berkeley.edu' => 'Emilie Tang', 'christine.c.shih@gmail.com' => 'Christine Shih', 'wfang@berkeley.edu' => 'Wicia Fang', 'edchoi@berkeley.edu' => 'Edward Choi',
+      'emilyyliu96@gmail.com' => 'Emily Liu', 'ranul.edirrisinghe@berkeley.edu' => 'Ranul Edirrisinghe', 'harukoayabe@gmail.com' => 'Haruko Ayabe',
+      'jkjhk0823@gmail.com' => 'JaeHoon Kim', 'thomas.warloe@gmail.com' => 'Thomas Warloe', 'ericpark1@berkeley.edu' => 'Eric Park', 'd.zhou.5521@berkeley.edu' => 'David Zhou',
+      'william.jiang@berkeley.edu' => 'William Jiang', 'michelleko@berkeley.edu' => 'Michelle Ko', 'vanessalin@berkeley.edu' => 'Vanessa Lin', 'huie@berkeley.edu' => 'Eugene Hui',
+      'timothyhongtran@berkeley.edu' => 'Timothy Tran', 'baiyigao@berkeley.edu' => 'Baiyi Gao', 'amylin123@berkeley.edu' => 'Amy Lin',
+      'lynn.ma@berkeley.edu' => 'Lynn Ma', 'benjaminlin@berkeley.edu' => 'Ben Lin', 'maruoyusuke@gmail.com' => 'Yusuke Maruo', 'claire.c@berkeley.edu' => 'Claire Chen', 'lenakan123@berkeley.edu' => 'Lena Kan',
+      'jfore96@berkeley.edu' => 'Ninah Fore', 'westruong@gmail.com' => 'Wesley Truong', 'takahari@berkeley.edu' => 'Natsuki Takahari', 'fl0424@berkeley.edu' => 'Felicia Lin',
+      'akwan726@gmail.com' => 'Andrea Kwan', 'gove.elizabeth@berkeley.edu' => 'Liz Gove', 'hkhan9357@gmail.com' => 'Hammad Khan',
+      'cocoj@berkeley.edu' => 'Coco Jiang', 'jedio@berkeley.edu' => 'Nancy Chen', 'sophiah@berkeley.edu' => 'Sophia Huang', 'gary850603@gmail.com' => 'Gary Huang', 'raymond.m.tong@gmail.com' => 'Raymond Tong',
+      'alexparkap@berkeley.edu' => 'Alex Park', 'cristalbanh@berkeley.edu' => 'Cristal Banh', 'paul.nguyen@berkeley.edu' => 'Paul Nguyen', 'lesleylu@berkeley.edu' => 'Lesley Lu', 'mintseng@berkeley.edu' => 'Min Tseng',
+      'acwu15@berkeley.edu' => 'Angela Wu', 'ccdavidcheung@berkeley.edu' => 'David Cheung', 'cyuan@berkeley.edu' => 'Cindy Yuan', 'd.yu@berkeley.edu' => 'Darren Yu',
+      'iwu18@berkeley.edu' => 'Iris Wu', 'w.cheung@berkeley.edu' => 'William Cheung', 'jessicashi@berkeley.edu' => 'Jessica Shi', 'joycelu@berkeley.edu' => 'Joyce Lu', 'shenshuyuan@berkeley.edu' => 'Shuyuan Shen',
+      'achan6785@gmail.com' => 'Arnold Chan', 'jesssunr@berkeley.edu' => 'Rui Sun', 'nathalie.nguyen@berkeley.edu' => 'Nathalie Nguyen', 'a.stahlhuth@gmail.com' => 'Andrew Stahlhuth',
+      'cindy96@berkeley.edu' => 'Cindy Kim', 'alou@berkeley.edu' => 'Andrew Lou', 'brittniwlam@berkeley.edu' => 'Brittni Lam', 'emily.vo@berkeley.edu' => 'Emily Vo',
+      'chuang22@berkeley.edu' => 'Chris Huang', 'loganjmoy@berkeley.edu' => 'Logan Moy', 'codyni@berkeley.edu' => 'Cody Ni', 'jingyao.yang@berkeley.edu' => 'Jingyao (Nancy) Yang',
+      'kenny.hyun@berkeley.edu' => 'Kenny Yoo', 'lucinda.tao@hotmail.com' => 'Lulu Tao', 'qianyuxin@berkeley.edu' => 'Winnie Xin', 'ahung@berkeley.edu' => 'Angela Hung', 'lkobayashi1@berkeley.edu' => 'Lauren Kobayashi',
+      'arielchen@berkeley.edu' => 'Ariel Chen', 'satokoayabe@gmail.com' => 'Satoko Ayabe', 'david.yan@berkeley.edu' => 'David Yan', 'hoping200100@berkeley.edu' => 'Brian Ho',
+      'josephchiang28@gmail.com' => 'Joseph Chiang', 'yjen@berkeley.edu' => 'Yiming Jen', 'alisont777@gmail.com' => 'Alison Tang', 'dakeying@gmail.com' => 'Dake Ying'
   }
 end
