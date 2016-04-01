@@ -13,9 +13,9 @@ class SemesterUser < ActiveRecord::Base
             user = User.find_or_create_by(email: email)
             user.update(name: EMAIL_NAME_HASH[email])
             role = Player::ROLE_ASSASSIN
-            if committee.eql?(Committee::IN)
+            if SPRING_2016_GAMEMAKERS.include?(email)
               role = Player::ROLE_GAMEMAKER
-            elsif committee.eql?(Committee::AC)
+            elsif SPRING_2016_SPECTATORS.include?(email)
               role = Player::ROLE_SPECTATOR
             end
             Player.create(user_id: user.id, game_id: game.id, role: role, alive: true, committee: committee)
@@ -41,6 +41,9 @@ class SemesterUser < ActiveRecord::Base
 
 
   SPRING_2016_GAME = 'Spring_2016'
+
+  SPRING_2016_GAMEMAKERS = Set.new(['gove.elizabeth@berkeley.edu', 'akwan726@gmail.com', 'hkhan9357@gmail.com', 'josephchiang28@gmail.com', 'dakeying@gmail.com'])
+  SPRING_2016_SPECTATORS = Set.new(['aldec777@gmail.com', 'adityasubbarao@gmail.com', 'kvyinn@gmail.com', 'davidbliu@gmail.com', 'anthonycleung415@gmail.com', 'evelynwangyen@gmail.com', 'alice.sun94@gmail.com'])
 
   # Full list for Spring 2016
   SPRING_2016_COMMITTEE_MEMBERS = {
