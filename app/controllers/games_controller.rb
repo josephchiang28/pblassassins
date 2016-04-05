@@ -1,16 +1,14 @@
 class GamesController < ApplicationController
+
   def index
     @game = Game.where(name: params[:name]).first
     if @game.nil?
       flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
       return redirect_to root_path
     end
-    players = @game.players
-    @gamemakers = players.where(role: Player::ROLE_GAMEMAKER).sort_by { |p| p.committee}
-    @assassins = players.where(role: Player::ROLE_ASSASSIN).sort_by { |p| p.committee}
-    @spectators = players.where(role: Player::ROLE_SPECTATOR).sort_by { |p| p.committee}
+    @notes = @game.notes.order(created_at: :desc)
     if current_user
-      @current_player = players.where(user_id: current_user.id).first
+      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
     end
   end
 
@@ -32,15 +30,18 @@ class GamesController < ApplicationController
     end
   end
 
-  def news
+  def roster
     @game = Game.where(name: params[:name]).first
     if @game.nil?
       flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
       return redirect_to root_path
     end
-    @notes = @game.notes.order(created_at: :desc)
+    players = @game.players
+    @gamemakers = players.where(role: Player::ROLE_GAMEMAKER).sort_by { |p| p.committee}
+    @assassins = players.where(role: Player::ROLE_ASSASSIN).sort_by { |p| p.committee}
+    @spectators = players.where(role: Player::ROLE_SPECTATOR).sort_by { |p| p.committee}
     if current_user
-      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      @current_player = players.where(user_id: current_user.id).first
     end
   end
 
