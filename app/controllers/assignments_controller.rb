@@ -1,10 +1,8 @@
 class AssignmentsController < ApplicationController
+  before_action :find_game_by_name, only: [:show, :manual_reassign]
+  before_action :find_game_by_id, only: [:generate_assignments, :activate_assignments, :kill]
+
   def show
-    @game = Game.where(name: params[:name]).first
-    if @game.nil?
-      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
-      return redirect_to root_path
-    end
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
       if @current_player.is_gamemaker
@@ -52,11 +50,6 @@ class AssignmentsController < ApplicationController
   end
 
   def manual_reassign
-    @game = Game.where(name: params[:name]).first
-    if @game.nil?
-      flash[:warning] = 'Error: The game ' + params[:name] + ' does not exist.'
-      return redirect_to root_path
-    end
     ring_assassin_ids = params[:ring_assassin_ids]
     ring_assassins = ring_assassin_ids.map { |id| Player.find(id) }
     # TODO: Make sure destroy and create are in one transaction
@@ -67,14 +60,13 @@ class AssignmentsController < ApplicationController
 
   def kill
     # TODO: Check permissions and if game and assassins found
-    game = Game.find(params[:game_id])
     assassin = Player.find(params[:player_id])
     is_reverse_kill = false
     if params[:commit] == 'Reverse Kill'
       is_reverse_kill = true
     end
-    if Assignment.register_kill(game, assassin, params[:victim_name], params[:killcode], is_reverse_kill)
-      if game.is_completed
+    if Assignment.register_kill(@game, assassin, params[:victim_name], params[:killcode], is_reverse_kill)
+      if @game.is_completed
         flash[:success] = 'Kill code confirmed. Congratulations, you are the last surviving assassin!'
       elsif is_reverse_kill
         flash[:success] = 'Kill code confirmed. Reverse kill confirmed and you are a new target of an assassin.'
@@ -84,6 +76,26 @@ class AssignmentsController < ApplicationController
     else
       flash[:warning] = 'Kill code incorrect. Forward or reverse kill not confirmed.'
     end
-    redirect_to show_assignments_path(name: game.name)
+    redirect_to show_assignments_path(name: @game.name)
+  end
+
+  private
+
+  def find_game_by_name
+    begin
+      @game = Game.find_by!(name: params[:name])
+    rescue ActiveRecord::RecordNotFound => e
+      flash[:warning] = 'Error: The game "' + params[:name] + '" does not exist.'
+      redirect_to root_path
+    end
+  end
+
+  def find_game_by_id
+    begin
+      @game = Game.find_by!(id: params[:game_id])
+    rescue ActiveRecord::RecordNotFound => e
+      flash[:warning] = 'Error: The game "' + params[:name] + '" does not exist.'
+      redirect_to root_path
+    end
   end
 end
