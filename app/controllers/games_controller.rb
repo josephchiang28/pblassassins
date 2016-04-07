@@ -5,13 +5,13 @@ class GamesController < ApplicationController
   def index
     @notes = @game.notes.order(created_at: :desc)
     if current_user
-      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
     end
   end
 
   def profile
     if current_user
-      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
       if @current_player.nil?
         flash[:warning] = 'Error: Your profile for the game ' + params[:name] + ' does not exist.'
         redirect_to root_path
@@ -28,7 +28,7 @@ class GamesController < ApplicationController
     @assassins = players.where(role: Player::ROLE_ASSASSIN).sort_by { |p| p.committee}
     @spectators = players.where(role: Player::ROLE_SPECTATOR).sort_by { |p| p.committee}
     if current_user
-      @current_player = players.where(user_id: current_user.id).first
+      @current_player = players.find_by(user_id: current_user.id)
     end
   end
 
@@ -44,7 +44,7 @@ class GamesController < ApplicationController
     end
     @committees_ranked =  committee_points_hash.sort_by{|committee, points| [-1 * (points || 0), committee]}
     if current_user
-      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
     end
   end
 
@@ -62,7 +62,7 @@ class GamesController < ApplicationController
       end
     end
     if current_user
-      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
       if @current_player and @current_player.is_assassin
         assassination_history_assignments_self = assassination_history_assignments_all
           .where('(assassin_id = ? AND status = ?) OR (target_id = ? AND status = ?)', @current_player.id, Assignment::STATUS_COMPLETED, @current_player.id, Assignment::STATUS_BACKFIRED)
@@ -77,11 +77,12 @@ class GamesController < ApplicationController
         end
       end
       if @current_player and not @current_player.alive
+        # Needs to find multiple death assignments if an assassin is allowed to be revived in the future
         # Find death by forward kill
-        death_assignment = assassination_history_assignments_all.where(target_id: @current_player.id, status: Assignment::STATUS_COMPLETED).first
+        death_assignment = assassination_history_assignments_all.find_by(target_id: @current_player.id, status: Assignment::STATUS_COMPLETED)
         if death_assignment.nil?
           # Find death by reverse kill
-          death_assignment = assassination_history_assignments_all.where(assassin_id: @current_player.id, status: Assignment::STATUS_BACKFIRED).first
+          death_assignment = assassination_history_assignments_all.find_by(assassin_id: @current_player.id, status: Assignment::STATUS_BACKFIRED)
           killer_name = Player.find(death_assignment.target_id).user.name
           @death_info = [death_assignment.time_deactivated.to_s, killer_name, 'reverse kill']
         else
@@ -97,7 +98,7 @@ class GamesController < ApplicationController
     @sponsors = @game.players.where('role = ? OR alive = ?', Player::ROLE_GAMEMAKER, false).sort_by { |p| [-1 * p.sponsor_points, p.user.name]}
     @notes = @game.notes.order(created_at: :desc)
     if current_user
-      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
     end
   end
   
@@ -122,7 +123,7 @@ class GamesController < ApplicationController
 
   def rules
     if current_user
-      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
     end
   end
 

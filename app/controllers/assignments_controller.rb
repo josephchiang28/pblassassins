@@ -6,7 +6,7 @@ class AssignmentsController < ApplicationController
 
   def show
     if current_user
-      @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
+      @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
       if not @current_player or @current_player.is_spectator
         flash[:warning] = 'Error: You do not have clearance to view the assignments of game "' + params[:name] + '".'
         redirect_to game_index_path(@game.name)
@@ -32,7 +32,7 @@ class AssignmentsController < ApplicationController
           @assignments_old_info.append([Player.find(a.assassin_id).user.name, Player.find(a.target_id).user.name, a.status])
         end
       elsif @current_player.is_assassin
-        @assignment = @game.assignments.where(assassin_id: @current_player.id, status: Assignment::STATUS_ACTIVE).first
+        @assignment = @game.assignments.find_by(assassin_id: @current_player.id, status: Assignment::STATUS_ACTIVE)
         @assassins_alive = @game.players.where(role: Player::ROLE_ASSASSIN, alive: true)
       end
     else

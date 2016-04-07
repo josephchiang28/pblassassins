@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
 
   # Only allow and update users that are manually entered by admin
   def self.from_omniauth(auth_hash)
-    user = User.where(email: auth_hash.info.email).first
+    user = User.find_by(email: auth_hash.info.email)
     if not user.nil?
       # user.name = auth_hash.info.name
       user.provider = auth_hash.provider

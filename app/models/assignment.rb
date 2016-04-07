@@ -114,7 +114,7 @@ class Assignment < ActiveRecord::Base
     end
     ring.append(curr_player)
     for i in 1..assignments.length - 1
-      curr_assignment = assignments.where(assassin_id: curr_assignment.target_id).first
+      curr_assignment = assignments.find_by(assassin_id: curr_assignment.target_id)
       if curr_assignment.nil?
         return nil
       else
@@ -185,10 +185,10 @@ class Assignment < ActiveRecord::Base
     killcode = killcode.strip
     game_assignments = game.assignments
     if is_reverse_kill
-      assignment = game_assignments.where(target_id: assassin.id, status: STATUS_ACTIVE).first # Check if there's only 1 such assignment?
+      assignment = game_assignments.find_by(target_id: assassin.id, status: STATUS_ACTIVE) # Check if there's only 1 such assignment?
       victim = Player.find(assignment.assassin_id) # Check if victim is found?
     else
-      assignment = game_assignments.where(assassin_id: assassin.id, status: STATUS_ACTIVE).first # Check if there's only 1 such assignment?
+      assignment = game_assignments.find_by(assassin_id: assassin.id, status: STATUS_ACTIVE) # Check if there's only 1 such assignment?
       victim = Player.find(assignment.target_id) # Check if victim is found?
     end
 
@@ -199,13 +199,13 @@ class Assignment < ActiveRecord::Base
           victim.update!(alive: false)
           if is_reverse_kill
             assignment.update!(status: STATUS_BACKFIRED, time_deactivated: Time.current)
-            assignment_stolen = game_assignments.where(target_id: victim.id, status: STATUS_ACTIVE).first
+            assignment_stolen = game_assignments.find_by(target_id: victim.id, status: STATUS_ACTIVE)
             assignment_stolen.update!(status: STATUS_STOLEN, time_deactivated: Time.current)
             game_assignments.create!(assassin_id: assignment_stolen.assassin_id, target_id: assassin.id, status: STATUS_ACTIVE, time_activated: Time.current)
             assassin.increment!(:points, by = REVERSE_KILL_POINTS)
           else
             assignment.update!(status: STATUS_COMPLETED, time_deactivated: Time.current)
-            assignment_failed = game_assignments.where(assassin_id: victim.id, status: STATUS_ACTIVE).first
+            assignment_failed = game_assignments.find_by(assassin_id: victim.id, status: STATUS_ACTIVE)
             assignment_failed.update!(status: STATUS_FAILED, time_deactivated: Time.current)
             game_assignments.create!(assassin_id: assassin.id, target_id: assignment_failed.target_id, status: STATUS_ACTIVE, time_activated: Time.current)
             assassin.increment!(:points, by = FORWARD_KILL_POINTS)
