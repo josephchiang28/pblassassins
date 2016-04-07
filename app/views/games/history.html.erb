@@ -5,7 +5,7 @@
   <div id="page-content-wrapper">
     <div class="container-fluid">
       <h1>History</h1>
-      <% if current_user and @current_player %>
+      <% if @current_player %>
         <% if @current_player.is_gamemaker %>
           <h3>All Assassination History: <%= @assassination_history_info_all.length %></h3>
           <% if @assassination_history_info_all.length > 0 %>
