@@ -22,7 +22,7 @@
               <tbody>
               <% for i in 0..@assassination_history_info_all.length - 1 %>
                 <tr>
-                  <th scope="row"><%= i + 1 %></th>
+                  <th scope="row"><%= @assassination_history_info_all.length - i%></th>
                   <td><%= @assassination_history_info_all[i][0] %></td>
                   <td><%= @assassination_history_info_all[i][1] %></td>
                   <td><%= @assassination_history_info_all[i][2] %></td>
@@ -68,7 +68,7 @@
               <tbody>
               <% for i in 0..@assassination_history_info_self.length - 1 %>
                 <tr>
-                  <th scope="row"><%= i + 1 %></th>
+                  <th scope="row"><%= @assassination_history_info_self.length - i %></th>
                   <td><%= @assassination_history_info_self[i][0] %></td>
                   <td><%= @assassination_history_info_self[i][1] %></td>
                   <td><%= @assassination_history_info_self[i][2] %></td>
@@ -94,7 +94,7 @@
           <tbody>
           <% for i in 0..@assassination_history_info_all.length - 1 %>
             <tr>
-              <th scope="row"><%= i + 1 %></th>
+              <th scope="row"><%= @assassination_history_info_all.length - i %></th>
               <td><%= @assassination_history_info_public[i][0] %></td>
               <td><%= @assassination_history_info_public[i][1] %></td>
             </tr>

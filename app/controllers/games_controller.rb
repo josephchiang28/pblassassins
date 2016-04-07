@@ -49,10 +49,10 @@ class GamesController < ApplicationController
   end
 
   def history
-    assassination_history_assignments_all = Assignment.where(game_id: @game.id,status: [Assignment::STATUS_COMPLETED, Assignment::STATUS_BACKFIRED])
+    assassination_history_assignments_all = Assignment.where(game_id: @game.id,status: [Assignment::STATUS_COMPLETED, Assignment::STATUS_BACKFIRED]).order(time_deactivated: :desc)
     @assassination_history_info_all = Array.new
     @assassination_history_info_public = Array.new
-    assassination_history_assignments_all.sort_by { |a| a.time_deactivated }.each do |assassination|
+    assassination_history_assignments_all.each do |assassination|
       if assassination.is_completed
         @assassination_history_info_all.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.name, Player.find(assassination.target_id).user.name, 'forward kill'])
         @assassination_history_info_public.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.name])
@@ -64,9 +64,9 @@ class GamesController < ApplicationController
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
       if @current_player and @current_player.is_assassin
-        assassination_history_assignments_self = assassination_history_assignments_all.where(assassin_id: @current_player.id, status: Assignment::STATUS_COMPLETED)
-        assassination_history_assignments_self += assassination_history_assignments_all.where(target_id: @current_player.id, status: Assignment::STATUS_BACKFIRED)
-        assassination_history_assignments_self = assassination_history_assignments_self.sort_by { |a| a.time_deactivated }
+        assassination_history_assignments_self = assassination_history_assignments_all
+          .where('(assassin_id = ? AND status = ?) OR (target_id = ? AND status = ?)', @current_player.id, Assignment::STATUS_COMPLETED, @current_player.id, Assignment::STATUS_BACKFIRED)
+          .order(time_deactivated: :desc)
         @assassination_history_info_self = Array.new
         assassination_history_assignments_self.each do |assassination|
           if assassination.is_completed
