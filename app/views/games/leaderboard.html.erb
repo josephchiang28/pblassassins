@@ -16,9 +16,17 @@
           </tr>
           </thead>
           <tbody>
+            <% tied_rank = 1 %>
             <% for i in 0..@committees_ranked.length - 1 %>
               <tr>
-                <th scope="row"><%= i + 1 %></th>
+                <th scope="row">
+                  <% if i > 0 and @committees_ranked[i-1][1] > @committees_ranked[i][1] %>
+                    <% tied_rank = i + 1 %>
+                    <%= i + 1 %>
+                  <% else %>
+                    <%= tied_rank %>
+                  <% end %>
+                </th>
                 <td><%= @committees_ranked[i][0] %></td>
                 <td><%= @committees_ranked[i][1] %></td>
               </tr>
@@ -39,13 +47,21 @@
           </tr>
           </thead>
           <tbody>
+          <% tied_rank = 1 %>
           <% for i in 0..@assassins_all_ranked.length - 1 %>
             <% if @assassins_all_ranked[i].alive? %>
               <tr>
             <% else %>
               <tr style="color: silver;">
             <% end %>
-              <th scope="row"><%= i + 1 %></th>
+              <th scope="row">
+                <% if i > 0 and @assassins_all_ranked[i-1].points > @assassins_all_ranked[i].points %>
+                  <% tied_rank = i + 1 %>
+                  <%= i + 1 %>
+                <% else %>
+                  <%= tied_rank %>
+                <% end %>
+              </th>
               <td><%= '[' + @assassins_all_ranked[i].committee + ']' %></td>
               <td><%= @assassins_all_ranked[i].user.name %></td>
               <td><%= @assassins_all_ranked[i].points %></td>
