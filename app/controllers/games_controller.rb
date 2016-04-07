@@ -33,16 +33,9 @@ class GamesController < ApplicationController
   end
 
   def leaderboard
-    @assassins_all_ranked = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN).sort_by { |p| [-1 * (p.points || 0), p.committee, p.user.name]}
-    @assassins_live_ranked = Array.new
-    @assassins_dead_ranked = Array.new
+    @assassins_all_ranked = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN).sort_by { |p| [-1 * (p.points || 0), p.alive? ? 0 : 1, p.committee, p.user.name]}
     committee_points_hash = Hash.new
     @assassins_all_ranked.each do |assassin|
-      if assassin.alive?
-        @assassins_live_ranked.append(assassin)
-      else
-        @assassins_dead_ranked.append(assassin)
-      end
       if committee_points_hash.key?(assassin.committee)
         committee_points_hash[assassin.committee] += assassin.points
       else

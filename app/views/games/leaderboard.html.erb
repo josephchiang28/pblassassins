@@ -5,7 +5,7 @@
   <div id="page-content-wrapper">
     <div class="container-fluid">
       <h1>Leaderboard</h1>
-      <div class="col-md-3 padding-right-only">
+      <div class="col-md-4 padding-right-only">
         <h3>Committees: <%= @committees_ranked.length %></h3>
         <table class="table table-sm">
           <thead>
@@ -26,8 +26,9 @@
           </tbody>
         </table>
       </div>
-      <div class="col-md-4 padding-right-only">
-        <h3>All Assassins: <%= @assassins_all_ranked.length %></h3>
+      <div class="col-md-5 padding-right-only">
+        <% assassins_live_count = @assassins_all_ranked.count{ |a| a.alive? } %>
+        <h3>Assassins: <%= assassins_live_count%> Alive | <%= @assassins_all_ranked.length - assassins_live_count %> Dead</h3>
         <table class="table table-sm">
           <thead>
           <tr>
@@ -39,55 +40,15 @@
           </thead>
           <tbody>
           <% for i in 0..@assassins_all_ranked.length - 1 %>
-            <tr>
+            <% if @assassins_all_ranked[i].alive? %>
+              <tr>
+            <% else %>
+              <tr style="color: silver;">
+            <% end %>
               <th scope="row"><%= i + 1 %></th>
               <td><%= '[' + @assassins_all_ranked[i].committee + ']' %></td>
               <td><%= @assassins_all_ranked[i].user.name %></td>
               <td><%= @assassins_all_ranked[i].points %></td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-      </div>
-      <div class="col-md-4 padding-right-only">
-        <h3>Live Assassins: <%= @assassins_live_ranked.length %></h3>
-        <table class="table table-sm">
-          <thead>
-          <tr>
-            <th>#</th>
-            <th>[ __ ]</th>
-            <th>Assassin</th>
-            <th>Points</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% for i in 0..@assassins_live_ranked.length - 1 %>
-            <tr>
-              <th scope="row"><%= i + 1 %></th>
-              <td><%= '[' + @assassins_live_ranked[i].committee + ']' %></td>
-              <td><%= @assassins_live_ranked[i].user.name %></td>
-              <td><%= @assassins_live_ranked[i].points %></td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-        <h3>Dead Assassins: <%= @assassins_dead_ranked.length %></h3>
-        <table class="table table-sm">
-          <thead>
-          <tr>
-            <th>#</th>
-            <th>[ __ ]</th>
-            <th>Assassin</th>
-            <th>Points</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% for i in 0..@assassins_dead_ranked.length - 1 %>
-            <tr>
-              <th scope="row"><%= i + 1 %></th>
-              <td><%= '[' + @assassins_dead_ranked[i].committee + ']' %></td>
-              <td><%= @assassins_dead_ranked[i].user.name %></td>
-              <td><%= @assassins_dead_ranked[i].points %></td>
             </tr>
           <% end %>
           </tbody>
