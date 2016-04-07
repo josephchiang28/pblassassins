@@ -24,9 +24,9 @@ class GamesController < ApplicationController
 
   def roster
     players = @game.players
-    @gamemakers = players.where(role: Player::ROLE_GAMEMAKER).sort_by { |p| p.committee}
-    @assassins = players.where(role: Player::ROLE_ASSASSIN).sort_by { |p| p.committee}
-    @spectators = players.where(role: Player::ROLE_SPECTATOR).sort_by { |p| p.committee}
+    @gamemakers = players.where(role: Player::ROLE_GAMEMAKER).sort_by { |p| [p.committee, p.user.name]}
+    @assassins = players.where(role: Player::ROLE_ASSASSIN).sort_by { |p| [p.committee, p.user.name]}
+    @spectators = players.where(role: Player::ROLE_SPECTATOR).sort_by { |p| [p.committee, p.user.name]}
     if current_user
       @current_player = players.find_by(user_id: current_user.id)
     end
