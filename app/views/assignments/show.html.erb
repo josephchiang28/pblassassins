@@ -127,17 +127,21 @@
               <table class="table table-sm">
                 <thead>
                 <tr>
+                  <th>#</th>
+                  <th>Time Deactivated</th>
                   <th>Assassin</th>
                   <th>Target</th>
                   <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
-                <% @assignments_old_info.each do |assignment_info| %>
+                <% for i in 0..@assignments_old_info.length - 1%>
                   <tr>
-                    <td><%= assignment_info[0] %></td>
-                    <td><%= assignment_info[1] %></td>
-                    <td><%= assignment_info[2] %></td>
+                    <th><%= @assignments_old_info.length - i %></th>
+                    <td><%= @assignments_old_info[i][0] %></td>
+                    <td><%= @assignments_old_info[i][1] %></td>
+                    <td><%= @assignments_old_info[i][2] %></td>
+                    <td><%= @assignments_old_info[i][3] %></td>
                   </tr>
                 <% end %>
                 </tbody>
