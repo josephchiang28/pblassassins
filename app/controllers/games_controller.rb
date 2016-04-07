@@ -1,5 +1,6 @@
 class GamesController < ApplicationController
   before_action :find_game_by_name
+  before_action :verify_gamemaker_clearance, only: [:update_sponsor_points]
 
   def index
     @notes = @game.notes.order(created_at: :desc)
@@ -108,20 +109,20 @@ class GamesController < ApplicationController
   end
   
   def update_sponsor_points
-    if current_user
-      current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
-      if current_player and current_player.is_gamemaker
-        sponsor = Player.find(params[:player_id])
-        if sponsor.update_sponsor_points(params[:new_points].to_i)
-          flash[:success] = 'Sponsor points successfully updated!'
-        else
-          flash[:warning] = 'Ooops, an error occurred. Sponsor points not updated.'
-        end
+    begin
+      sponsor = Player.find(params[:player_id])
+    rescue ActiveRecord::RecordNotFound
+      flash[:warning] = 'Error: Sponsor not found'
+    end
+    new_points = params[:new_points].to_i
+    if new_points >= 0
+      if sponsor.update_sponsor_points(new_points)
+        flash[:success] = 'Sponsor points successfully updated!'
       else
-        flash[:warning] = 'Ooops, you do not have permission to update sponsor points.'
+        flash[:warning] = 'Ooops, an error occurred. Sponsor points not updated.'
       end
     else
-      flash[:warning] = 'Ooops, you do not have permission to update sponsor points.'
+      flash[:warning] = 'Error: Sponsor points must be positive.'
     end
     redirect_to game_sponsors_path(@game.name)
   end
@@ -139,6 +140,20 @@ class GamesController < ApplicationController
       @game = Game.find_by!(name: params[:name])
     rescue ActiveRecord::RecordNotFound => e
       flash[:warning] = 'Error: The game "' + params[:name] + '" does not exist.'
+      redirect_to root_path
+    end
+  end
+
+  def verify_gamemaker_clearance
+    has_gamemaker_clearance = false
+    if current_user
+      @gamemaker = Player.find_by(user_id: current_user.id, game_id: @game.id)
+      if @gamemaker and @gamemaker.is_gamemaker
+        has_gamemaker_clearance = true
+      end
+    end
+    if not has_gamemaker_clearance
+      flash[:warning] = 'Error: You do not have the gamemaker clearance to perform the action.'
       redirect_to root_path
     end
   end

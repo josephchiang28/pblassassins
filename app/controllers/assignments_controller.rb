@@ -1,6 +1,8 @@
 class AssignmentsController < ApplicationController
   before_action :find_game_by_name, only: [:show, :manual_reassign]
   before_action :find_game_by_id, only: [:generate_assignments, :activate_assignments, :kill]
+  before_action :verify_gamemaker_clearance, only: [:generate_assignments, :activate_assignments, :manual_reassign]
+  before_action :verify_assassin_clearance, only: [:kill]
 
   def show
     if current_user
@@ -39,13 +41,13 @@ class AssignmentsController < ApplicationController
 
   def generate_assignments
     # TODO: Need to do error handling if assignments successfully generated
-    Assignment.generate_assignments(params[:game_id], 'all')
+    Assignment.generate_assignments(@game.id, 'all')
     redirect_to show_assignments_path
   end
 
   def activate_assignments
     # TODO: Need to do error handling if assignments successfully activated
-    Assignment.discard_old_and_activate_new_assignments(params[:game_id])
+    Assignment.discard_old_and_activate_new_assignments(@game.id)
     redirect_to show_assignments_path
   end
 
@@ -59,13 +61,11 @@ class AssignmentsController < ApplicationController
   end
 
   def kill
-    # TODO: Check permissions and if game and assassins found
-    assassin = Player.find(params[:player_id])
     is_reverse_kill = false
     if params[:commit] == 'Reverse Kill'
       is_reverse_kill = true
     end
-    if Assignment.register_kill(@game, assassin, params[:victim_name], params[:killcode], is_reverse_kill)
+    if Assignment.register_kill(@game, @assassin, params[:victim_name], params[:killcode], is_reverse_kill)
       if @game.is_completed
         flash[:success] = 'Kill code confirmed. Congratulations, you are the last surviving assassin!'
       elsif is_reverse_kill
@@ -98,4 +98,33 @@ class AssignmentsController < ApplicationController
       redirect_to root_path
     end
   end
+
+  def verify_gamemaker_clearance
+    has_gamemaker_clearance = false
+    if current_user
+      @gamemaker = Player.find_by(user_id: current_user.id, game_id: @game.id)
+      if @gamemaker and @gamemaker.is_gamemaker
+        has_gamemaker_clearance = true
+      end
+    end
+    if not has_gamemaker_clearance
+      flash[:warning] = 'Error: You do not have the gamemaker clearance to perform the action.'
+      redirect_to root_path
+    end
+  end
+
+  def verify_assassin_clearance
+    has_assassin_clearance = false
+    if current_user
+      @assassin = Player.find_by(user_id: current_user.id, game_id: @game.id)
+      if @assassin and @assassin.is_assassin
+        has_assassin_clearance = true
+      end
+    end
+    if not has_assassin_clearance
+      flash[:warning] = 'Error: You do not have the assassin clearance to perform the action.'
+      redirect_to root_path
+    end
+  end
+
 end
