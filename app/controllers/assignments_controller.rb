@@ -7,7 +7,10 @@ class AssignmentsController < ApplicationController
   def show
     if current_user
       @current_player = Player.where(user_id: current_user.id, game_id: @game.id).first
-      if @current_player.is_gamemaker
+      if not @current_player or @current_player.is_spectator
+        flash[:warning] = 'Error: You do not have clearance to view the assignments of game "' + params[:name] + '".'
+        redirect_to game_index_path(@game.name)
+      elsif @current_player.is_gamemaker
         assignments_all = @game.assignments
         assignments_active = assignments_all.where(status: Assignment::STATUS_ACTIVE)
         assignments_inactive = assignments_all.where(status: Assignment::STATUS_INACTIVE)
@@ -31,11 +34,10 @@ class AssignmentsController < ApplicationController
       elsif @current_player.is_assassin
         @assignment = @game.assignments.where(assassin_id: @current_player.id, status: Assignment::STATUS_ACTIVE).first
         @assassins_alive = @game.players.where(role: Player::ROLE_ASSASSIN, alive: true)
-      else
-        # User is spectator, to be implemented
       end
     else
-      # Not signed in
+      flash[:warning] = 'Error: You do not have clearance to view the assignments of game "' + params[:name] + '".'
+      redirect_to game_index_path(@game.name)
     end
   end
 
