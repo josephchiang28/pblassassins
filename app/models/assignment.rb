@@ -2,13 +2,14 @@ class Assignment < ActiveRecord::Base
   belongs_to :game
   validates :game_id, :assassin_id, :target_id, :status, presence: true
 
-  STATUS_INACTIVE = 'inactive'   # Assignment generated but not confirmed and activated
-  STATUS_ACTIVE = 'active'       # Assignment confirmed and activated
-  STATUS_FAILED = 'failed'       # Got killed before completing assignment
-  STATUS_STOLEN = 'stolen'       # Target got reverse killed
-  STATUS_COMPLETED = 'completed' # Successful completion of assignment
-  STATUS_BACKFIRED = 'backfired' # Got reverse killed
-  STATUS_DISCARDED = 'discarded' # Discarded, target reassigned manually
+  STATUS_INACTIVE = 'inactive'         # Assignment generated but not confirmed and activated
+  STATUS_ACTIVE = 'active'             # Assignment confirmed and activated
+  STATUS_FAILED = 'failed'             # Got killed before completing assignment
+  STATUS_STOLEN = 'stolen'             # Target got reverse killed
+  STATUS_COMPLETED = 'completed'       # Successful completion of assignment
+  STATUS_BACKFIRED = 'backfired'       # Got reverse killed
+  STATUS_DISCARDED = 'discarded'       # Discarded, target reassigned manually
+  STATUS_DISCHARGED = 'discharged'     # Assassin is manually killed and removed by gamemaker
   FORWARD_KILL_POINTS = 1
   REVERSE_KILL_POINTS = 2
 
@@ -38,6 +39,10 @@ class Assignment < ActiveRecord::Base
 
   def is_discarded
     self.status.eql?(STATUS_DISCARDED)
+  end
+
+  def is_discharged
+    self.status.eql?(STATUS_DISCHARGED)
   end
 
   # Generates a directed ring (active record list) of assassins
@@ -220,6 +225,29 @@ class Assignment < ActiveRecord::Base
     end
     game.check_and_complete_game
     return true
+  end
+
+  # Assassin manually killed by gamemaker. No points are awarded.
+  def self.discharge_assassin(game, assassin)
+    if not assassin.is_assassin
+      return false
+    end
+    game_assignments = game.assignments
+    assignment_discharged = game_assignments.find_by(assassin_id: assassin.id, status: STATUS_ACTIVE)
+    Assignment.transaction do
+      begin
+        assassin.update!(alive: false)
+        assignment_discharged.update!(status: STATUS_DISCHARGED, time_deactivated: Time.current)
+        assignment_discarded = game_assignments.find_by!(target_id: assassin.id, status: STATUS_ACTIVE)
+        assignment_discarded.update!(status: STATUS_DISCARDED, time_deactivated: Time.current)
+        game_assignments.create!(assassin_id: assignment_discarded.assassin_id, target_id: assignment_discharged.target_id, status: STATUS_ACTIVE, time_activated: Time.current)
+      rescue Exception => exception
+        p 'ERROR: DISCHARGE ASSASSIN FAILED! ' + exception.message
+        return false
+      end
+    end
+    game.check_and_complete_game
+    true
   end
 
 end
