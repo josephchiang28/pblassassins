@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get 'games/:name/roster' => 'games#roster', as: :game_roster
   get 'games/:name/leaderboard' => 'games#leaderboard', as: :game_leaderboard
   get 'games/:name/assignments' => 'assignments#show', as: :show_assignments
+  get 'games/:name/manage' => 'games#manage', as: :game_manage
   get 'games/:name/history' => 'games#history', as: :game_history
   get 'games/:name/sponsors' => 'games#sponsors', as: :game_sponsors
   get 'games/:name/rules' => 'games#rules', as: :game_rules
@@ -26,6 +27,7 @@ Rails.application.routes.draw do
   post 'games/:name/activate_assignments' => 'assignments#activate_assignments', as: :activate_assignments
   post 'games/:name/kill' => 'assignments#kill', as: :kill
   post 'games/:name/manual_reassign' => 'assignments#manual_reassign', as: :manual_reassign
+  post 'games/:name/reassign_roles' => 'games#reassign_roles', as: :reassign_roles
   post 'games/:name/update_sponsor_points' => 'games#update_sponsor_points', as: :update_sponsor_points
   post 'games/:name/create_note' => 'notes#create', as: :create_note
   post 'games/:name/delete_note' => 'notes#delete', as: :delete_note

@@ -19,6 +19,11 @@
         <%= link_to 'Assignments', show_assignments_path(@game.name) %>
       </li>
     <% end %>
+    <% if @current_player and @current_player.is_gamemaker %>
+      <li>
+        <%= link_to 'Manage', game_manage_path(@game.name) %>
+      </li>
+    <% end %>
     <li>
       <%= link_to 'History', game_history_path(@game.name) %>
     </li>

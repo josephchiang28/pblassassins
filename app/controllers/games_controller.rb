@@ -48,6 +48,20 @@ class GamesController < ApplicationController
     end
   end
 
+  def manage
+    @players = @game.players.sort_by { |p| [p.role.eql?(Player::ROLE_GAMEMAKER) ? 0 : p.role.eql?(Player::ROLE_ASSASSIN) ? 1 : 2, p.committee, p.user.name]}
+    if current_user
+      @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
+    end
+  end
+
+  def reassign_roles
+    if current_user
+      @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
+    end
+    redirect_to game_manage_path(name: @game.name)
+  end
+
   def history
     assassination_history_assignments_all = Assignment.where(game_id: @game.id,status: [Assignment::STATUS_COMPLETED, Assignment::STATUS_BACKFIRED]).order(time_deactivated: :desc)
     @assassination_history_info_all = Array.new
