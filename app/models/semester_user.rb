@@ -18,7 +18,7 @@ class SemesterUser < ActiveRecord::Base
             elsif SPRING_2016_SPECTATORS.include?(email)
               role = Player::ROLE_SPECTATOR
             end
-            Player.create(user_id: user.id, game_id: game.id, role: role, alive: true, committee: committee)
+            Player.create(user_id: user.id, game_id: game.id, role: role, committee: committee)
           end
         end
       rescue Exception => exception

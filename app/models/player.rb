@@ -3,7 +3,6 @@ class Player < ActiveRecord::Base
   belongs_to :game
   validates :user_id, :game_id, :committee, :role, :points, :sponsor_points, presence: true
   validates :user_id, uniqueness: {scope: :game_id}
-  validates :alive, :inclusion => {:in => [true, false]}
 
   ROLE_GAMEMAKER = 'gamemaker'         # Gamemaker and owner of the game
   ROLE_ASSASSIN_LIVE = 'assassin_live' # Live assassin player
