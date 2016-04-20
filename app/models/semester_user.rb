@@ -12,7 +12,7 @@ class SemesterUser < ActiveRecord::Base
           email_list.each do |email|
             user = User.find_or_create_by(email: email)
             user.update(name: EMAIL_NAME_HASH[email])
-            role = Player::ROLE_ASSASSIN
+            role = Player::ROLE_ASSASSIN_LIVE
             if SPRING_2016_GAMEMAKERS.include?(email)
               role = Player::ROLE_GAMEMAKER
             elsif SPRING_2016_SPECTATORS.include?(email)

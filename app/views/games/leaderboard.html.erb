@@ -35,8 +35,8 @@
         </table>
       </div>
       <div class="col-md-5 padding-right-only">
-        <% assassins_live_count = @assassins_all_ranked.count{ |a| a.alive? } %>
-        <h3>Assassins: <%= assassins_live_count%> Alive | <%= @assassins_all_ranked.length - assassins_live_count %> Dead</h3>
+        <% assassins_live_count = @assassins_all_ranked.count{ |a| a.is_assassin_live } %>
+        <h3>Assassins: <%= assassins_live_count %> Alive | <%= @assassins_all_ranked.length - assassins_live_count %> Dead</h3>
         <table class="table table-sm">
           <thead>
           <tr>
@@ -49,7 +49,7 @@
           <tbody>
           <% tied_rank = 1 %>
           <% for i in 0..@assassins_all_ranked.length - 1 %>
-            <% if @assassins_all_ranked[i].alive? %>
+            <% if @assassins_all_ranked[i].is_assassin_live %>
               <tr>
             <% else %>
               <tr style="color: silver;">

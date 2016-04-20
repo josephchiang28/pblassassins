@@ -35,7 +35,7 @@
             <p>None available</p>
           <% end %>
         <% elsif @current_player.is_assassin %>
-          <% if not @current_player.alive %>
+          <% if @current_player.is_assassin_dead %>
             <h3>Your Death</h3>
             <table class="table table-sm">
               <thead>

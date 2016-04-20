@@ -25,7 +25,7 @@ class GamesController < ApplicationController
   def roster
     players = @game.players
     @gamemakers = players.where(role: Player::ROLE_GAMEMAKER).sort_by { |p| [p.committee, p.user.name]}
-    @assassins = players.where(role: Player::ROLE_ASSASSIN).sort_by { |p| [p.committee, p.user.name]}
+    @assassins = players.where(role: [Player::ROLE_ASSASSIN_LIVE, Player::ROLE_ASSASSIN_DEAD]).sort_by { |p| [p.committee, p.user.name]}
     @spectators = players.where(role: Player::ROLE_SPECTATOR).sort_by { |p| [p.committee, p.user.name]}
     if current_user
       @current_player = players.find_by(user_id: current_user.id)
@@ -33,7 +33,7 @@ class GamesController < ApplicationController
   end
 
   def leaderboard
-    @assassins_all_ranked = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN).sort_by { |p| [-1 * (p.points || 0), p.alive? ? 0 : 1, p.committee, p.user.name]}
+    @assassins_all_ranked = Player.where(game_id: @game.id, role: [Player::ROLE_ASSASSIN_LIVE, Player::ROLE_ASSASSIN_DEAD]).sort_by { |p| [-1 * (p.points || 0), p.is_assassin_live ? 0 : 1, p.committee, p.user.name]}
     committee_points_hash = Hash.new
     @assassins_all_ranked.each do |assassin|
       if committee_points_hash.key?(assassin.committee)
@@ -49,7 +49,7 @@ class GamesController < ApplicationController
   end
 
   def manage
-    @players = @game.players.sort_by { |p| [p.role.eql?(Player::ROLE_GAMEMAKER) ? 0 : p.role.eql?(Player::ROLE_ASSASSIN) ? 1 : 2, p.committee, p.user.name]}
+    @players = @game.players.sort_by { |p| [p.is_gamemaker ? 0 : p.is_assassin ? 1 : 2, p.committee, p.user.name]}
     if current_user
       @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
     end
@@ -90,7 +90,7 @@ class GamesController < ApplicationController
           end
         end
       end
-      if @current_player and not @current_player.alive
+      if @current_player and @current_player.is_assassin_dead
         # Needs to find multiple death assignments if an assassin is allowed to be revived in the future
         # Find death by forward kill
         death_assignment = assassination_history_assignments_all.find_by(target_id: @current_player.id, status: Assignment::STATUS_COMPLETED)
@@ -109,7 +109,7 @@ class GamesController < ApplicationController
 
 
   def sponsors
-    @sponsors = @game.players.where('role = ? OR alive = ?', Player::ROLE_GAMEMAKER, false).sort_by { |p| [-1 * p.sponsor_points, p.user.name]}
+    @sponsors = @game.players.where(role: [Player::ROLE_GAMEMAKER, Player::ROLE_ASSASSIN_DEAD]).sort_by { |p| [-1 * p.sponsor_points, p.user.name]}
     @notes = @game.notes.order(created_at: :desc)
     if current_user
       @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)

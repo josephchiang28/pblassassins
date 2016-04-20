@@ -75,7 +75,7 @@ class Assignment < ActiveRecord::Base
     end
     game_id = ring[0].game_id
     ring.each do |player|
-      if not player.alive? or player.game_id != game_id
+      if player.is_assassin_dead or player.game_id != game_id
         return false
       end
     end
@@ -137,9 +137,9 @@ class Assignment < ActiveRecord::Base
   def self.generate_assignments(game_id, type)
     @game = Game.find(game_id)
     if type.eql?('all')
-      @assassins = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN)
+      @assassins = Player.where(game_id: @game.id, role: [Player::ROLE_ASSASSIN_LIVE, Player::ROLE_ASSASSIN_DEAD])
     elsif type.eql?('active_only')
-      @assassins = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN, alive: true)
+      @assassins = Player.where(game_id: @game.id, role: Player::ROLE_ASSASSIN_LIVE)
     end
     Assignment.transaction do
       begin
@@ -201,7 +201,7 @@ class Assignment < ActiveRecord::Base
       # Update players and game status
       Assignment.transaction do
         begin
-          victim.update!(alive: false)
+          victim.update!(role: Player::ROLE_ASSASSIN_DEAD)
           if is_reverse_kill
             assignment.update!(status: STATUS_BACKFIRED, time_deactivated: Time.current)
             assignment_stolen = game_assignments.find_by(target_id: victim.id, status: STATUS_ACTIVE)
@@ -236,7 +236,7 @@ class Assignment < ActiveRecord::Base
     assignment_discharged = game_assignments.find_by(assassin_id: assassin.id, status: STATUS_ACTIVE)
     Assignment.transaction do
       begin
-        assassin.update!(alive: false)
+        assassin.update!(role: Player::ROLE_ASSASSIN_DEAD)
         assignment_discharged.update!(status: STATUS_DISCHARGED, time_deactivated: Time.current)
         assignment_discarded = game_assignments.find_by!(target_id: assassin.id, status: STATUS_ACTIVE)
         assignment_discarded.update!(status: STATUS_DISCARDED, time_deactivated: Time.current)

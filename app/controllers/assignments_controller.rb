@@ -33,7 +33,7 @@ class AssignmentsController < ApplicationController
         end
       elsif @current_player.is_assassin
         @assignment = @game.assignments.find_by(assassin_id: @current_player.id, status: Assignment::STATUS_ACTIVE)
-        @assassins_alive = @game.players.where(role: Player::ROLE_ASSASSIN, alive: true)
+        @assassins_alive = @game.players.where(role: Player::ROLE_ASSASSIN_LIVE)
       end
     else
       flash[:warning] = 'Error: You do not have clearance to view the assignments of game "' + params[:name] + '".'

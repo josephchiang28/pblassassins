@@ -27,7 +27,7 @@ class Game < ActiveRecord::Base
   end
 
   def check_and_complete_game
-    if self.players.where(role: Player::ROLE_ASSASSIN, alive: true).length == 1
+    if self.players.where(role: Player::ROLE_ASSASSIN_LIVE).length == 1
       self.update(status: STATUS_COMPLETED)
     end
   end

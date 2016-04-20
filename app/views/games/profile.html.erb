@@ -52,13 +52,13 @@
             </tr>
             <tr>
               <th scope="row">Status</th>
-              <% if @current_player.alive? %>
+              <% if @current_player.is_assassin_live %>
                 <td>alive</td>
               <% else %>
                 <td>dead</td>
               <% end %>
             </tr>
-            <% if @current_player.alive %>
+            <% if @current_player.is_assassin_live %>
               <tr>
                 <th scope="row">Killcode</th>
                 <% if @current_player.killcode.nil?%>
@@ -70,7 +70,7 @@
               </tr>
             <% end %>
           <% end %>
-          <% if @current_player.is_assassin and not @current_player.alive %>
+          <% if @current_player.is_assassin_dead %>
             <tr>
               <th scope="row">Sponsor Points</th>
               <td><%= @current_player.sponsor_points%></td>
@@ -78,7 +78,7 @@
           <% end %>
           </tbody>
         </table>
-        <% if @current_player.is_assassin and @current_player.alive and not @current_player.killcode.nil?%>
+        <% if @current_player.is_assassin_live and not @current_player.killcode.nil?%>
           <button type="button" id="kill-code-reveal" class="btn btn-secondary">Reveal Kill Code</button>
           <button type="button" id="kill-code-hide" class="btn btn-secondary">Hide Kill Code</button>
         <% end %>

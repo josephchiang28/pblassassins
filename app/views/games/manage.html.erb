@@ -18,17 +18,15 @@
                   <% case player.role %>
                   <% when Player::ROLE_GAMEMAKER %>
                     <% role_id = 1 %>
-                  <% when Player::ROLE_ASSASSIN %>
-                    <% if player.alive? %>
-                      <% role_id = 2 %>
-                    <% else %>
-                      <% role_id = 3 %>
-                    <% end %>
+                  <% when Player::ROLE_ASSASSIN_LIVE %>
+                    <% role_id = 2 %>
+                  <% when Player::ROLE_ASSASSIN_DEAD %>
+                    <% role_id = 3 %>
                   <% when Player::ROLE_SPECTATOR %>
                     <% role_id = 4 %>
                   <% else %>
                   <% end %>
-                  <%= select_tag('players[' + player.id.to_s + ']', options_for_select([[Player::ROLE_GAMEMAKER, 1], [Player::ROLE_ASSASSIN + ' - alive', 2], [Player::ROLE_ASSASSIN + ' - dead', 3], [Player::ROLE_SPECTATOR, 4]], role_id), class: 'form-control') %>
+                  <%= select_tag('players[' + player.id.to_s + ']', options_for_select([[Player::ROLE_GAMEMAKER, 1], [Player::ROLE_ASSASSIN_LIVE, 2], [Player::ROLE_ASSASSIN_DEAD, 3], [Player::ROLE_SPECTATOR, 4]], role_id), class: 'form-control') %>
                 </td>
               </tr>
           <% end %>

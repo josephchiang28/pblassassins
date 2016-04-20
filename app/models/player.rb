@@ -5,17 +5,26 @@ class Player < ActiveRecord::Base
   validates :user_id, uniqueness: {scope: :game_id}
   validates :alive, :inclusion => {:in => [true, false]}
 
-  ROLE_GAMEMAKER = 'gamemaker' # Gamemaker and owner of the game
-  ROLE_ASSASSIN = 'assassin'   # Assassin player
-  ROLE_SPECTATOR = 'spectator' # Spectator, not participating
-  ROLES = [ROLE_GAMEMAKER, ROLE_ASSASSIN, ROLE_SPECTATOR]
+  ROLE_GAMEMAKER = 'gamemaker'         # Gamemaker and owner of the game
+  ROLE_ASSASSIN_LIVE = 'assassin_live' # Live assassin player
+  ROLE_ASSASSIN_DEAD = 'assassin_dead' # Dead assassin player
+  ROLE_SPECTATOR = 'spectator'         # Spectator, not participating
+  ROLES = [ROLE_GAMEMAKER, ROLE_ASSASSIN_LIVE, ROLE_ASSASSIN_DEAD, ROLE_SPECTATOR]
 
   def is_gamemaker
     self.role.eql?(ROLE_GAMEMAKER)
   end
 
+  def is_assassin_live
+    self.role.eql?(ROLE_ASSASSIN_LIVE)
+  end
+
+  def is_assassin_dead
+    self.role.eql?(ROLE_ASSASSIN_DEAD)
+  end
+
   def is_assassin
-    self.role.eql?(ROLE_ASSASSIN)
+    self.is_assassin_live or self.is_assassin_dead
   end
 
   def is_spectator
