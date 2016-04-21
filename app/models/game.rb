@@ -4,6 +4,7 @@ class Game < ActiveRecord::Base
   has_many :notes
   validates :name, presence: true, uniqueness: true
   validates :status, presence: true
+  validates :public_enemy_mode, :inclusion => {:in => [true, false]}
 
   STATUS_INACTIVE = 'inactive'    # Game not active and assignments not generated
   STATUS_PENDING = 'pending'      # Game not active and assignments generated but not confirmed
