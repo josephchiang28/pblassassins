@@ -229,16 +229,16 @@ class Assignment < ActiveRecord::Base
   end
 
   # Assassin manually killed by gamemaker. No points are awarded.
-  def self.discharge_assassin(assassin)
-    if not assassin.is_assassin_live
-      p 'ERROR: DISCHARGE ASSASSIN FAILED! Player must be a live assassin.'
+  def self.discharge_assassin(assassin, new_role=Player::ROLE_ASSASSIN_DEAD)
+    if new_role.eql?(Player::ROLE_ASSASSIN_LIVE) or not assassin.is_assassin_live
+      p 'ERROR: DISCHARGE ASSASSIN FAILED! Player must be a live assassin and new role must not be ROLE_ASSASSIN_LIVE.'
       return false
     end
     game = assassin.game
     game_assignments = game.assignments
     Assignment.transaction do
       begin
-        assassin.update!(role: Player::ROLE_ASSASSIN_DEAD)
+        assassin.update!(role: new_role)
         assignment_discharged = game_assignments.find_by!(assassin_id: assassin.id, status: STATUS_ACTIVE)
         assignment_discharged.update!(status: STATUS_DISCHARGED, time_deactivated: Time.current)
         assignment_discarded = game_assignments.find_by!(target_id: assassin.id, status: STATUS_ACTIVE)

@@ -1,6 +1,6 @@
 class GamesController < ApplicationController
   before_action :find_game_by_name
-  before_action :verify_gamemaker_clearance, only: [:update_sponsor_points]
+  before_action :verify_gamemaker_clearance, only: [:manage, :reassign_roles, :update_sponsor_points]
 
   def index
     @notes = @game.notes.order(created_at: :desc)
@@ -56,6 +56,11 @@ class GamesController < ApplicationController
   end
 
   def reassign_roles
+    if @game.reassign_players_role(params[:players])
+      flash[:success] = 'Success: Reassign players role successful'
+    else
+      flash[:warning] = 'Error: Reassign players role failed.'
+    end
     if current_user
       @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
     end
@@ -161,7 +166,7 @@ class GamesController < ApplicationController
       end
     end
     if not has_gamemaker_clearance
-      flash[:warning] = 'Error: You do not have the gamemaker clearance to perform the action.'
+      flash[:warning] = 'Error: You do not have the gamemaker clearance to view the page or perform the action.'
       redirect_to root_path
     end
   end

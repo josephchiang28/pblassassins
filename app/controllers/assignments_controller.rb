@@ -27,6 +27,12 @@ class AssignmentsController < ApplicationController
         else
           @assignments_manual_ordered_assassins = Array.new
         end
+        assassins_live = @game.players.where(role: Player::ROLE_ASSASSIN_LIVE)
+        assassins_live.each do |assassin|
+          if not @assignments_manual_ordered_assassins.include?(assassin)
+            @assignments_manual_ordered_assassins.append(assassin)
+          end
+        end
         @assignments_old_info = Array.new
         assignments_old.each do |a|
           @assignments_old_info.append([a.time_deactivated, Player.find(a.assassin_id).user.name, Player.find(a.target_id).user.name, a.status])
