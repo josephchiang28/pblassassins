@@ -170,9 +170,12 @@
               <%= label_tag(:killcode, 'Kill Code') %>
               <%= text_field_tag(:killcode, nil, required: true) %>
 
-              <%= submit_tag('Forward Kill', class: 'btn btn-secondary') %>
+              <%= submit_tag(Assignment::FORWARD_KILL_TEXT, class: 'btn btn-secondary') %>
               <% if @assassins_alive.length > 2 %>
-                <%= submit_tag('Reverse Kill', class: 'btn btn-secondary') %>
+                <%= submit_tag(Assignment::REVERSE_KILL_TEXT, class: 'btn btn-secondary') %>
+                <% if @game.public_enemy_mode? %>
+                  <%= submit_tag(Assignment::PUBLIC_ENEMY_KILL_TEXT, class: 'btn btn-secondary') %>
+                <% end %>
               <% end %>
             <% end %>
           <% end %>

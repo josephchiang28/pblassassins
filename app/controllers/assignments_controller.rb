@@ -69,20 +69,26 @@ class AssignmentsController < ApplicationController
   end
 
   def kill
-    is_reverse_kill = false
-    if params[:commit] == 'Reverse Kill'
-      is_reverse_kill = true
+    if params[:commit].eql?(Assignment::PUBLIC_ENEMY_KILL_TEXT) and not @game.public_enemy_mode?
+      flash[:warning] = 'ERROR: Public enemy kill not allowed because public enemy mode not activated.'
+      return redirect_to show_assignments_path(name: @game.name)
     end
-    if Assignment.register_kill(@assassin, params[:victim_name], params[:killcode], is_reverse_kill)
-      if @game.is_completed
-        flash[:success] = 'Kill code confirmed. Congratulations, you are the last surviving assassin!'
-      elsif is_reverse_kill
-        flash[:success] = 'Kill code confirmed. Reverse kill confirmed and you are a new target of an assassin.'
+    if params[:commit].eql?(Assignment::FORWARD_KILL_TEXT) or params[:commit].eql?(Assignment::REVERSE_KILL_TEXT) or params[:commit].eql?(Assignment::PUBLIC_ENEMY_KILL_TEXT)
+      if Assignment.register_kill(@assassin, params[:victim_name], params[:killcode], params[:commit])
+        if @game.is_completed
+          flash[:success] = 'Kill code confirmed. Congratulations, you are the last surviving assassin!'
+        elsif params[:commit].eql?(Assignment::FORWARD_KILL_TEXT)
+          flash[:success] = 'Kill code confirmed. Forward kill registered and a new target is assigned.'
+        elsif params[:commit].eql?(Assignment::REVERSE_KILL_TEXT)
+          flash[:success] = 'Kill code confirmed. Reverse kill registered and you are a new target of an assassin.'
+        elsif params[:commit].eql?(Assignment::PUBLIC_ENEMY_KILL_TEXT)
+          flash[:success] = 'Kill code confirmed. Public enemy kill registered.'
+        end
       else
-        flash[:success] = 'Kill code confirmed. Forward kill confirmed and a new target is assigned.'
+        flash[:warning] = 'ERROR: Victim name or kill code incorrect or victim not public enemy. Kill not registered.'
       end
     else
-      flash[:warning] = 'Kill code incorrect. Forward or reverse kill not confirmed.'
+      flash[:warning] = 'ERROR: Invalid commit type.'
     end
     redirect_to show_assignments_path(name: @game.name)
   end

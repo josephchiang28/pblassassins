@@ -4,14 +4,20 @@ class Assignment < ActiveRecord::Base
 
   STATUS_INACTIVE = 'inactive'         # Assignment generated but not confirmed and activated
   STATUS_ACTIVE = 'active'             # Assignment confirmed and activated
-  STATUS_FAILED = 'failed'             # Got killed before completing assignment
-  STATUS_STOLEN = 'stolen'             # Target got reverse killed
-  STATUS_COMPLETED = 'completed'       # Successful completion of assignment
-  STATUS_BACKFIRED = 'backfired'       # Got reverse killed
-  STATUS_DISCARDED = 'discarded'       # Discarded, target reassigned manually
-  STATUS_DISCHARGED = 'discharged'     # Assassin is manually killed and removed by gamemaker
+  STATUS_FAILED = 'failed'             # Assassin got forward killed or killed as a public enemy before completing assignment
+  STATUS_STOLEN = 'stolen'             # Target got reverse killed or killed as a public enemy not by the assassin
+  STATUS_COMPLETED = 'completed'       # Assassin successfully killed target
+  STATUS_BACKFIRED = 'backfired'       # Assassin got reverse killed by target
+  STATUS_DISCARDED = 'discarded'       # Target reassigned manually by gamemaker
+  STATUS_DISCHARGED = 'discharged'     # Assassin is manually killed by gamemaker
+  STATUS_EXECUTED = 'executed'         # Assignment created to record a public enemy kill
+  FORWARD_KILL_TEXT = 'Forward Kill'
+  REVERSE_KILL_TEXT = 'Reverse Kill'
+  PUBLIC_ENEMY_KILL_TEXT = 'Public Enemy Kill'
   FORWARD_KILL_POINTS = 1
   REVERSE_KILL_POINTS = 2
+  PUBLIC_ENEMY_KILL_POINTS = 1
+
 
   def is_inactive
     self.status.eql?(STATUS_INACTIVE)
@@ -185,44 +191,72 @@ class Assignment < ActiveRecord::Base
     Assignment.where(game_id: game_id, status: STATUS_INACTIVE).destroy_all
   end
 
-  def self.register_kill(assassin, victim_name, killcode, is_reverse_kill)
+  def self.register_kill(assassin, victim_name, killcode, kill_type)
     game = assassin.game
     victim_name = victim_name.strip
     killcode = killcode.strip
     game_assignments = game.assignments
-    if is_reverse_kill
-      assignment = game_assignments.find_by(target_id: assassin.id, status: STATUS_ACTIVE) # Check if there's only 1 such assignment?
-      victim = Player.find(assignment.assassin_id) # Check if victim is found?
-    else
-      assignment = game_assignments.find_by(assassin_id: assassin.id, status: STATUS_ACTIVE) # Check if there's only 1 such assignment?
-      victim = Player.find(assignment.target_id) # Check if victim is found?
-    end
-
-    if victim.user.name.eql?(victim_name) and killcode.eql?(victim.killcode)
-      # Update players and game status
-      Assignment.transaction do
-        begin
-          victim.update!(role: Player::ROLE_ASSASSIN_DEAD)
-          if is_reverse_kill
-            assignment.update!(status: STATUS_BACKFIRED, time_deactivated: Time.current)
-            assignment_stolen = game_assignments.find_by(target_id: victim.id, status: STATUS_ACTIVE)
-            assignment_stolen.update!(status: STATUS_STOLEN, time_deactivated: Time.current)
-            game_assignments.create!(assassin_id: assignment_stolen.assassin_id, target_id: assassin.id, status: STATUS_ACTIVE, time_activated: Time.current)
-            assassin.increment!(:points, by = REVERSE_KILL_POINTS)
-          else
+    Assignment.transaction do
+      begin
+        if kill_type.eql?(FORWARD_KILL_TEXT)
+          assignment = game_assignments.find_by!(assassin_id: assassin.id, status: STATUS_ACTIVE) # Check if there's only 1 such assignment?
+          victim = Player.find(assignment.target_id)
+          if victim.user.name.eql?(victim_name) and victim.killcode.eql?(killcode)
             assignment.update!(status: STATUS_COMPLETED, time_deactivated: Time.current)
-            assignment_failed = game_assignments.find_by(assassin_id: victim.id, status: STATUS_ACTIVE)
+            assignment_failed = game_assignments.find_by!(assassin_id: victim.id, status: STATUS_ACTIVE)
             assignment_failed.update!(status: STATUS_FAILED, time_deactivated: Time.current)
             game_assignments.create!(assassin_id: assassin.id, target_id: assignment_failed.target_id, status: STATUS_ACTIVE, time_activated: Time.current)
+            victim.update!(role: Player::ROLE_ASSASSIN_DEAD)
             assassin.increment!(:points, by = FORWARD_KILL_POINTS)
+          else
+            return false
           end
-        rescue ActiveRecord::RecordInvalid => exception
-          p 'ERROR: REGISTER KILL FAILED! ' + exception.message
+        elsif kill_type.eql?(REVERSE_KILL_TEXT)
+          assignment = game_assignments.find_by!(target_id: assassin.id, status: STATUS_ACTIVE) # Check if there's only 1 such assignment?
+          victim = Player.find(assignment.assassin_id)
+          if victim.user.name.eql?(victim_name) and victim.killcode.eql?(killcode)
+            assignment.update!(status: STATUS_BACKFIRED, time_deactivated: Time.current)
+            assignment_stolen = game_assignments.find_by!(target_id: victim.id, status: STATUS_ACTIVE)
+            assignment_stolen.update!(status: STATUS_STOLEN, time_deactivated: Time.current)
+            game_assignments.create!(assassin_id: assignment_stolen.assassin_id, target_id: assassin.id, status: STATUS_ACTIVE, time_activated: Time.current)
+            victim.update!(role: Player::ROLE_ASSASSIN_DEAD)
+            assassin.increment!(:points, by = REVERSE_KILL_POINTS)
+          else
+            return false
+          end
+        elsif kill_type.eql?(PUBLIC_ENEMY_KILL_TEXT)
+          if game.public_enemy_mode?
+            # Assuming no killcode in a game will be identical, need to test all possible victims since multiple players can have the same name
+            # Kills the first killcode match
+            possible_users = User.where(name: victim_name).map { |user| user.players.find_by(game_id: game.id) }
+            possible_users.each do |victim|
+              if victim and victim.is_public_enemy and victim.killcode.eql?(killcode)
+                assignment_failed = game.assignments.find_by!(assassin_id: victim.id, status: STATUS_ACTIVE)
+                assignment_failed.update!(status: STATUS_FAILED, time_deactivated: Time.current)
+                assignment_stolen = game_assignments.find_by!(target_id: victim.id, status: STATUS_ACTIVE)
+                assignment_stolen.update!(status: STATUS_STOLEN, time_deactivated: Time.current)
+                game_assignments.create!(assassin_id: assignment_stolen.assassin_id, target_id: assignment_failed.target_id, status: STATUS_ACTIVE, time_activated: Time.current)
+                game_assignments.create!(assassin_id: assassin.id, target_id: victim.id, status: STATUS_EXECUTED , time_activated: Time.current, time_deactivated: Time.current)
+                victim.update!(role: Player::ROLE_ASSASSIN_DEAD)
+                assassin.increment!(:points, by = PUBLIC_ENEMY_KILL_POINTS)
+                game.check_and_complete_game
+                return true
+              end
+            end
+            # Killcode did not match any player
+            return false
+          else
+            p 'ERROR: PUBLIC ENEMY ATTEMPT WHILE NOT IN PUBLIC ENEMY MODE.'
+            return false
+          end
+        else
+          p 'ERROR: INVALID KILL TYPE.'
           return false
         end
+      rescue ActiveRecord::RecordInvalid => exception
+        p 'ERROR: REGISTER KILL FAILED! ' + exception.message
+        return false
       end
-    else
-      return false
     end
     game.check_and_complete_game
     return true

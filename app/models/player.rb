@@ -30,6 +30,10 @@ class Player < ActiveRecord::Base
     self.role.eql?(ROLE_SPECTATOR)
   end
 
+  def is_public_enemy
+    self. is_assassin_live and self.points <= 0
+  end
+
   # Returns true if successfully updates sponsor points, false otherwise
   def update_sponsor_points(new_points)
     if new_points >= 0
