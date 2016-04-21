@@ -185,7 +185,8 @@ class Assignment < ActiveRecord::Base
     Assignment.where(game_id: game_id, status: STATUS_INACTIVE).destroy_all
   end
 
-  def self.register_kill(game, assassin, victim_name, killcode, is_reverse_kill)
+  def self.register_kill(assassin, victim_name, killcode, is_reverse_kill)
+    game = assassin.game
     victim_name = victim_name.strip
     killcode = killcode.strip
     game_assignments = game.assignments
@@ -228,25 +229,42 @@ class Assignment < ActiveRecord::Base
   end
 
   # Assassin manually killed by gamemaker. No points are awarded.
-  def self.discharge_assassin(game, assassin)
-    if not assassin.is_assassin
+  def self.discharge_assassin(assassin)
+    if not assassin.is_assassin_live
+      p 'ERROR: DISCHARGE ASSASSIN FAILED! Player must be a live assassin.'
       return false
     end
+    game = assassin.game
     game_assignments = game.assignments
-    assignment_discharged = game_assignments.find_by(assassin_id: assassin.id, status: STATUS_ACTIVE)
     Assignment.transaction do
       begin
         assassin.update!(role: Player::ROLE_ASSASSIN_DEAD)
+        assignment_discharged = game_assignments.find_by!(assassin_id: assassin.id, status: STATUS_ACTIVE)
         assignment_discharged.update!(status: STATUS_DISCHARGED, time_deactivated: Time.current)
         assignment_discarded = game_assignments.find_by!(target_id: assassin.id, status: STATUS_ACTIVE)
         assignment_discarded.update!(status: STATUS_DISCARDED, time_deactivated: Time.current)
         game_assignments.create!(assassin_id: assignment_discarded.assassin_id, target_id: assignment_discharged.target_id, status: STATUS_ACTIVE, time_activated: Time.current)
-      rescue Exception => exception
-        p 'ERROR: DISCHARGE ASSASSIN FAILED! ' + exception.message
+      rescue Exception => e
+        p 'ERROR: DISCHARGE ASSASSIN FAILED! ' + e.message
         return false
       end
     end
     game.check_and_complete_game
+    true
+  end
+
+  # Change the player's role to ROLE_ASSASSIN_LIVE. To actually add the assassin into the assignment ring, gamemakers will have to do so in manual reassign.
+  def self.enlist_assassin(assassin)
+    if assassin.is_assassin_live
+      p 'ERROR: ENLIST ASSASSIN FAILED! Player must not be a live assassin.'
+      return false
+    end
+    begin
+      assassin.update!(role: Player::ROLE_ASSASSIN_LIVE)
+    rescue Exception => e
+      p 'ERROR: ENLIST ASSASSIN FAILED! ' + exception.message
+      return false
+    end
     true
   end
 

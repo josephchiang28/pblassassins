@@ -67,7 +67,7 @@ class AssignmentsController < ApplicationController
     if params[:commit] == 'Reverse Kill'
       is_reverse_kill = true
     end
-    if Assignment.register_kill(@game, @assassin, params[:victim_name], params[:killcode], is_reverse_kill)
+    if Assignment.register_kill(@assassin, params[:victim_name], params[:killcode], is_reverse_kill)
       if @game.is_completed
         flash[:success] = 'Kill code confirmed. Congratulations, you are the last surviving assassin!'
       elsif is_reverse_kill
