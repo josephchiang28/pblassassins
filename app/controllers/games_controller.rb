@@ -37,12 +37,13 @@ class GamesController < ApplicationController
     committee_points_hash = Hash.new
     @assassins_all_ranked.each do |assassin|
       if committee_points_hash.key?(assassin.committee)
-        committee_points_hash[assassin.committee] += assassin.points
+        committee_points_hash[assassin.committee][0] += assassin.points
+        committee_points_hash[assassin.committee][1] += 1
       else
-        committee_points_hash[assassin.committee] = assassin.points
+        committee_points_hash[assassin.committee] = [assassin.points, 1]
       end
     end
-    @committees_ranked =  committee_points_hash.sort_by{|committee, points| [-1 * (points || 0), committee]}
+    @committees_ranked =  committee_points_hash.sort_by{|committee, points_and_count| [-1 * (points_and_count[0].to_f / points_and_count[1]), committee]}
     if current_user
       @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
     end

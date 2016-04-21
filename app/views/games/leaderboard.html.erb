@@ -5,22 +5,25 @@
   <div id="page-content-wrapper">
     <div class="container-fluid">
       <h1>Leaderboard</h1>
-      <div class="col-md-4 padding-right-only">
+      <div class="col-md-5 padding-right-only">
         <h3>Committees: <%= @committees_ranked.length %></h3>
         <table class="table table-sm">
           <thead>
           <tr>
             <th>#</th>
             <th>Committee</th>
-            <th>Points</th>
+            <th>Total Points</th>
+            <th>Per Member</th>
           </tr>
           </thead>
           <tbody>
             <% tied_rank = 1 %>
+            <% avg_points_prev = -1 %>
             <% for i in 0..@committees_ranked.length - 1 %>
+              <% avg_points_curr = @committees_ranked[i][1][0].to_f / @committees_ranked[i][1][1] %>
               <tr>
                 <th scope="row">
-                  <% if i > 0 and @committees_ranked[i-1][1] > @committees_ranked[i][1] %>
+                  <% if i > 0 and avg_points_prev > avg_points_curr %>
                     <% tied_rank = i + 1 %>
                     <%= i + 1 %>
                   <% else %>
@@ -28,8 +31,10 @@
                   <% end %>
                 </th>
                 <td><%= @committees_ranked[i][0] %></td>
-                <td><%= @committees_ranked[i][1] %></td>
+                <td><%= @committees_ranked[i][1][0] %></td>
+                <td><%= avg_points_curr.round(3) %></td>
               </tr>
+              <% avg_points_prev = avg_points_curr %>
             <% end %>
           </tbody>
         </table>
