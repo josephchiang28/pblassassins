@@ -8,11 +8,22 @@
       <%= form_tag reassign_roles_path do %>
         <%= submit_tag('Update roles', data: { confirm: 'Are you sure to apply the role changes?' }, class: 'btn btn-primary') %>
         <table class="table table-sm">
+          <thead>
+          <tr>
+            <th>[ __ ]</th>
+            <th>Player</th>
+            <th>Kill Points</th>
+            <th>Sponsor Points</th>
+            <th>Role</th>
+          </tr>
+          </thead>
           <tbody>
           <% @players.each do |player| %>
               <tr>
                 <td><%= '[' + player.committee + ']' %></td>
                 <td><%= player.user.name %></td>
+                <td><%= player.points %></td>
+                <td><%= player.sponsor_points %></td>
                 <td>
                   <%= select_tag('players[' + player.id.to_s + ']', options_for_select(Player::ROLES, player.role), class: 'form-control') %>
                 </td>
@@ -20,11 +31,7 @@
           <% end %>
           </tbody>
         </table>
-
-
       <% end %>
-
-
     </div>
 
     <%= render 'layouts/footer' %>
