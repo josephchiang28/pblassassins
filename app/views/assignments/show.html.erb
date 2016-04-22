@@ -90,7 +90,11 @@
             <div class="col-md-4 padding-right-only">
               <h3>Pending Assignments: <%= @assignments_inactive_ordered_assassins.length %></h3>
               <% if @assignments_inactive_ordered_assassins.length > 0 %>
-                <%= button_to 'Confirm and activate assignments', activate_assignments_path(game_id: @game.id), class: 'btn btn-primary' %>
+                <%= button_to 'Confirm and activate assignments', activate_assignments_path(game_id: @game.id),
+                              data: (@assignments_inactive_ordered_assassins.length > @assignments_active_ordered_assassins.length ?
+                                    { confirm: 'ALERT: You might be reviving some assassins. Are you sure to activate all pending assignments?' } :
+                                    { confirm: 'Are you sure to activate all pending assignments?' }),
+                              class: 'btn btn-primary' %>
                 <table class="table table-sm">
                   <tbody>
                   <% @assignments_inactive_ordered_assassins.each do |assassin| %>
