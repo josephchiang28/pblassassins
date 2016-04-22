@@ -5,12 +5,13 @@
   <div id="page-content-wrapper">
     <div class="container-fluid">
       <h1><%= @game.name %></h1>
-      <h5>Status: <%= @game.status %></h5>
+      <h5>Status: <%= @game.status.titleize %></h5>
+      <h5>Public Enemy Mode: <%= @game.public_enemy_mode ? 'On' : 'Off' %></h5>
       <div>
         <% if @current_player and @current_player.is_gamemaker %>
           <%= form_tag create_note_path do %>
             <%= text_area_tag(:content, nil, required: true, class: 'form-control') %>
-            <%= submit_tag("Post", class: 'btn btn-primary') %>
+            <%= submit_tag('Post', class: 'btn btn-primary') %>
           <% end %>
         <% end %>
       </div>

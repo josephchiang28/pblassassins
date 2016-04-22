@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   post 'games/:name/activate_assignments' => 'assignments#activate_assignments', as: :activate_assignments
   post 'games/:name/kill' => 'assignments#kill', as: :kill
   post 'games/:name/manual_reassign' => 'assignments#manual_reassign', as: :manual_reassign
+  post 'games/:name/set_public_enemy_mode' => 'games#set_public_enemy_mode', as: :set_public_enemy_mode
   post 'games/:name/reassign_roles' => 'games#reassign_roles', as: :reassign_roles
   post 'games/:name/update_sponsor_points' => 'games#update_sponsor_points', as: :update_sponsor_points
   post 'games/:name/create_note' => 'notes#create', as: :create_note

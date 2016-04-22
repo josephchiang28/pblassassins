@@ -5,6 +5,15 @@
   <div id="page-content-wrapper">
     <div class="container-fluid">
       <h1>Manage</h1>
+      <%= form_tag set_public_enemy_mode_path do %>
+        <b style="font-size: large">Public Enemy Mode: </b>
+        <%= radio_button_tag(:public_enemy_mode, 'On', checked = @game.public_enemy_mode) %>
+        <%= label_tag(:on, 'On') %>
+        <%= radio_button_tag(:public_enemy_mode, 'Off', checked = !@game.public_enemy_mode) %>
+        <%= label_tag(:off, 'Off') %>
+        <%= submit_tag('Set Public Enemy Mode', class: 'btn btn-primary') %>
+      <% end %>
+      <br>
       <%= form_tag reassign_roles_path do %>
         <%= submit_tag('Update roles', data: { confirm: 'Are you sure to apply the role changes?' }, class: 'btn btn-primary') %>
         <table class="table table-sm">

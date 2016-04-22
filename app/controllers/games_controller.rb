@@ -56,6 +56,20 @@ class GamesController < ApplicationController
     end
   end
 
+  def set_public_enemy_mode
+    public_enemy_mode_new = params[:public_enemy_mode].eql?('On') ? true : false
+    if @game.public_enemy_mode != public_enemy_mode_new
+      @game.update(public_enemy_mode: public_enemy_mode_new)
+      flash[:success] = 'Success: Public enemy mode is now ' + (public_enemy_mode_new ? 'on.' : 'off.')
+    else
+      flash[:warning] = 'Public enemy mode is same as before.'
+    end
+    if current_user
+      @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
+    end
+    redirect_to game_manage_path(name: @game.name)
+  end
+
   def reassign_roles
     if @game.reassign_players_role(params[:players])
       flash[:success] = 'Success: Reassign players role successful'
