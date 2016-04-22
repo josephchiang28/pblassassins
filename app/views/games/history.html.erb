@@ -35,24 +35,30 @@
             <p>None available</p>
           <% end %>
         <% elsif @current_player.is_assassin %>
-          <% if @current_player.is_assassin_dead %>
-            <h3>Your Death</h3>
-            <table class="table table-sm">
-              <thead>
+          <h3>Your Deaths: <%= @deaths_info.length %></h3>
+          <% if @deaths_info.length > 0 %>
+          <table class="table table-sm">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Time of Death</th>
+              <th>Assassinated by</th>
+              <th>Kill Type</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% for i in 0..@deaths_info.length - 1 %>
               <tr>
-                <th>Time of Death</th>
-                <th>Assassinated by</th>
-                <th>Kill Type</th>
+                <th scope="row"><%= @deaths_info.length - i %></th>
+                <td><%= @deaths_info[i][0] %></td>
+                <td><%= @deaths_info[i][1] %></td>
+                <td><%= @deaths_info[i][2] %></td>
               </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td><%= @death_info[0] %></td>
-                <td><%= @death_info[1] %></td>
-                <td><%= @death_info[2] %></td>
-              </tr>
-              </tbody>
-            </table>
+            <% end %>
+            </tbody>
+          </table>
+          <% else %>
+            <p>None available</p>
           <% end %>
           <h3>Your Assassination History: <%= @history_info_self.length %></h3>
           <% if @history_info_self.length > 0 %>
