@@ -69,46 +69,61 @@ class GamesController < ApplicationController
   end
 
   def history
-    assassination_history_assignments_all = Assignment.where(game_id: @game.id,status: [Assignment::STATUS_COMPLETED, Assignment::STATUS_BACKFIRED]).order(time_deactivated: :desc)
-    @assassination_history_info_all = Array.new
-    @assassination_history_info_public = Array.new
-    assassination_history_assignments_all.each do |assassination|
-      if assassination.is_completed
-        @assassination_history_info_all.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.name, Player.find(assassination.target_id).user.name, 'forward kill'])
-        @assassination_history_info_public.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.name])
-      else
-        @assassination_history_info_all.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.name, Player.find(assassination.assassin_id).user.name, 'reverse kill'])
-        @assassination_history_info_public.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.name])
-      end
-    end
     if current_user
       @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
-      if @current_player and @current_player.is_assassin
-        assassination_history_assignments_self = assassination_history_assignments_all
-          .where('(assassin_id = ? AND status = ?) OR (target_id = ? AND status = ?)', @current_player.id, Assignment::STATUS_COMPLETED, @current_player.id, Assignment::STATUS_BACKFIRED)
-          .order(time_deactivated: :desc)
-        @assassination_history_info_self = Array.new
-        assassination_history_assignments_self.each do |assassination|
-          if assassination.is_completed
-            @assassination_history_info_self.append([assassination.time_deactivated.to_s, Player.find(assassination.target_id).user.name, 'forward kill'])
-          else
-            @assassination_history_info_self.append([assassination.time_deactivated.to_s, Player.find(assassination.assassin_id).user.name, 'reverse kill'])
-          end
+    end
+    history_assignments_all = Assignment.where(game_id: @game.id, status: [Assignment::STATUS_COMPLETED, Assignment::STATUS_BACKFIRED, Assignment::STATUS_EXECUTED]).order(time_deactivated: :desc)
+    @history_info_all = Array.new
+    @history_info_public = Array.new
+    history_assignments_all.each do |assignment|
+      if assignment.is_completed
+        killer_name = Player.find(assignment.assassin_id).user.name
+        victim_name = Player.find(assignment.target_id).user.name
+        kill_type = Assignment::FORWARD_KILL_TEXT
+      elsif assignment.is_backfired
+        killer_name = Player.find(assignment.target_id).user.name
+        victim_name = Player.find(assignment.assassin_id).user.name
+        kill_type = Assignment::REVERSE_KILL_TEXT
+      elsif assignment.is_executed
+        killer_name = Player.find(assignment.assassin_id).user.name
+        victim_name = Player.find(assignment.target_id).user.name
+        kill_type = Assignment::PUBLIC_ENEMY_KILL_TEXT
+      else
+        next
+      end
+      # if @current_player and @current_player.is_gamemaker
+        @history_info_all.append([assignment.time_deactivated.to_s, killer_name, victim_name, kill_type])
+      # end
+      @history_info_public.append([assignment.time_deactivated.to_s, victim_name])
+    end
+    if @current_player and @current_player.is_assassin
+      history_assignments_self = history_assignments_all
+        .where('(assassin_id = ? AND (status = ? OR status = ?)) OR (target_id = ? AND status = ?)',
+               @current_player.id, Assignment::STATUS_COMPLETED, Assignment::STATUS_EXECUTED, @current_player.id, Assignment::STATUS_BACKFIRED)
+        .order(time_deactivated: :desc)
+      @history_info_self = Array.new
+      history_assignments_self.each do |assignment|
+        if assignment.is_completed
+          @history_info_self.append([assignment.time_deactivated.to_s, Player.find(assignment.target_id).user.name, Assignment::FORWARD_KILL_TEXT])
+        elsif assignment.is_backfired
+          @history_info_self.append([assignment.time_deactivated.to_s, Player.find(assignment.assassin_id).user.name, Assignment::REVERSE_KILL_TEXT])
+        elsif assignment.is_executed
+          @history_info_self.append([assignment.time_deactivated.to_s, Player.find(assignment.target_id).user.name, Assignment::PUBLIC_ENEMY_KILL_TEXT])
         end
       end
-      if @current_player and @current_player.is_assassin_dead
-        # Needs to find multiple death assignments if an assassin is allowed to be revived in the future
-        # Find death by forward kill
-        death_assignment = assassination_history_assignments_all.find_by(target_id: @current_player.id, status: Assignment::STATUS_COMPLETED)
-        if death_assignment.nil?
-          # Find death by reverse kill
-          death_assignment = assassination_history_assignments_all.find_by(assassin_id: @current_player.id, status: Assignment::STATUS_BACKFIRED)
-          killer_name = Player.find(death_assignment.target_id).user.name
-          @death_info = [death_assignment.time_deactivated.to_s, killer_name, 'reverse kill']
-        else
-          killer_name = Player.find(death_assignment.assassin_id).user.name
-          @death_info = [death_assignment.time_deactivated.to_s, killer_name, 'forward kill']
-        end
+    end
+    if @current_player and @current_player.is_assassin_dead
+      # Needs to find multiple death assignments if an assassin is allowed to be revived in the future
+      # Find death by forward kill
+      death_assignment = history_assignments_all.find_by(target_id: @current_player.id, status: Assignment::STATUS_COMPLETED)
+      if death_assignment.nil?
+        # Find death by reverse kill
+        death_assignment = history_assignments_all.find_by(assassin_id: @current_player.id, status: Assignment::STATUS_BACKFIRED)
+        killer_name = Player.find(death_assignment.target_id).user.name
+        @death_info = [death_assignment.time_deactivated.to_s, killer_name, 'reverse kill']
+      else
+        killer_name = Player.find(death_assignment.assassin_id).user.name
+        @death_info = [death_assignment.time_deactivated.to_s, killer_name, 'forward kill']
       end
     end
   end

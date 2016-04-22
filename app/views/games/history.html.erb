@@ -7,8 +7,8 @@
       <h1>History</h1>
       <% if @current_player %>
         <% if @current_player.is_gamemaker %>
-          <h3>All Assassination History: <%= @assassination_history_info_all.length %></h3>
-          <% if @assassination_history_info_all.length > 0 %>
+          <h3>All Assassination History: <%= @history_info_all.length %></h3>
+          <% if @history_info_all.length > 0 %>
             <table class="table table-sm">
               <thead>
               <tr>
@@ -16,17 +16,17 @@
                 <th>Time of Assassination</th>
                 <th>Killer</th>
                 <th>Victim</th>
-                <th>Direction</th>
+                <th>Kill Type</th>
               </tr>
               </thead>
               <tbody>
-              <% for i in 0..@assassination_history_info_all.length - 1 %>
+              <% for i in 0..@history_info_all.length - 1 %>
                 <tr>
-                  <th scope="row"><%= @assassination_history_info_all.length - i%></th>
-                  <td><%= @assassination_history_info_all[i][0] %></td>
-                  <td><%= @assassination_history_info_all[i][1] %></td>
-                  <td><%= @assassination_history_info_all[i][2] %></td>
-                  <td><%= @assassination_history_info_all[i][3] %></td>
+                  <th scope="row"><%= @history_info_all.length - i%></th>
+                  <td><%= @history_info_all[i][0] %></td>
+                  <td><%= @history_info_all[i][1] %></td>
+                  <td><%= @history_info_all[i][2] %></td>
+                  <td><%= @history_info_all[i][3] %></td>
                 </tr>
               <% end %>
               </tbody>
@@ -42,7 +42,7 @@
               <tr>
                 <th>Time of Death</th>
                 <th>Assassinated by</th>
-                <th>Direction</th>
+                <th>Kill Type</th>
               </tr>
               </thead>
               <tbody>
@@ -54,24 +54,24 @@
               </tbody>
             </table>
           <% end %>
-          <h3>Your Assassination History: <%= @assassination_history_info_self.length %></h3>
-          <% if @assassination_history_info_self.length > 0 %>
+          <h3>Your Assassination History: <%= @history_info_self.length %></h3>
+          <% if @history_info_self.length > 0 %>
             <table class="table table-sm">
               <thead>
               <tr>
                 <th>#</th>
                 <th>Time of Assassination</th>
                 <th>Victim</th>
-                <th>Direction</th>
+                <th>Kill Type</th>
               </tr>
               </thead>
               <tbody>
-              <% for i in 0..@assassination_history_info_self.length - 1 %>
+              <% for i in 0..@history_info_self.length - 1 %>
                 <tr>
-                  <th scope="row"><%= @assassination_history_info_self.length - i %></th>
-                  <td><%= @assassination_history_info_self[i][0] %></td>
-                  <td><%= @assassination_history_info_self[i][1] %></td>
-                  <td><%= @assassination_history_info_self[i][2] %></td>
+                  <th scope="row"><%= @history_info_self.length - i %></th>
+                  <td><%= @history_info_self[i][0] %></td>
+                  <td><%= @history_info_self[i][1] %></td>
+                  <td><%= @history_info_self[i][2] %></td>
                 </tr>
               <% end %>
               </tbody>
@@ -81,8 +81,8 @@
           <% end %>
         <% end %>
       <% end %>
-      <h3>All Assassin Deaths: <%= @assassination_history_info_public.length %></h3>
-      <% if @assassination_history_info_public.length > 0 %>
+      <h3>All Assassin Deaths: <%= @history_info_public.length %></h3>
+      <% if @history_info_public.length > 0 %>
         <table class="table table-sm">
           <thead>
           <tr>
@@ -92,11 +92,11 @@
           </tr>
           </thead>
           <tbody>
-          <% for i in 0..@assassination_history_info_all.length - 1 %>
+          <% for i in 0..@history_info_public.length - 1 %>
             <tr>
-              <th scope="row"><%= @assassination_history_info_all.length - i %></th>
-              <td><%= @assassination_history_info_public[i][0] %></td>
-              <td><%= @assassination_history_info_public[i][1] %></td>
+              <th scope="row"><%= @history_info_public.length - i %></th>
+              <td><%= @history_info_public[i][0] %></td>
+              <td><%= @history_info_public[i][1] %></td>
             </tr>
           <% end %>
           </tbody>

@@ -51,6 +51,10 @@ class Assignment < ActiveRecord::Base
     self.status.eql?(STATUS_DISCHARGED)
   end
 
+  def is_executed
+    self.status.eql?(STATUS_EXECUTED)
+  end
+
   # Generates a directed ring (active record list) of assassins
   def self.generate_ring(assassins, blacklist_size = 3)
     ring = Array.new
