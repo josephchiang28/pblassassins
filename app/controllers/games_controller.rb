@@ -1,6 +1,6 @@
 class GamesController < ApplicationController
   before_action :find_game_by_name
-  before_action :verify_gamemaker_clearance, only: [:manage, :reassign_roles, :update_sponsor_points]
+  before_action :verify_gamemaker_clearance
 
   def index
     @notes = @game.notes.order(created_at: :desc)
@@ -196,7 +196,7 @@ class GamesController < ApplicationController
       end
     end
     if not has_gamemaker_clearance
-      flash[:warning] = 'Error: You do not have the gamemaker clearance to view the page or perform the action.'
+      flash[:warning] = 'Error: Requested page is temporary down for maintenance and it will be back up shortly. Thank you for your patience.'
       redirect_to root_path
     end
   end

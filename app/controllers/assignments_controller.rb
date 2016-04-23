@@ -1,8 +1,8 @@
 class AssignmentsController < ApplicationController
   before_action :find_game_by_name, only: [:show, :manual_reassign]
   before_action :find_game_by_id, only: [:generate_assignments, :activate_assignments, :kill]
-  before_action :verify_gamemaker_clearance, only: [:generate_assignments, :activate_assignments, :manual_reassign]
-  before_action :verify_assassin_clearance, only: [:kill]
+  before_action :verify_gamemaker_clearance
+  # before_action :verify_assassin_clearance, only: [:kill]
 
   def show
     if current_user
@@ -122,7 +122,7 @@ class AssignmentsController < ApplicationController
       end
     end
     if not has_gamemaker_clearance
-      flash[:warning] = 'Error: You do not have the gamemaker clearance to perform the action.'
+      flash[:warning] = 'Error: Requested page is temporary down for maintenance and it will be back up shortly. Thank you for your patience.'
       redirect_to root_path
     end
   end
