@@ -9,6 +9,11 @@ class GamesController < ApplicationController
     end
   end
 
+  def index_json
+    render json: {:game => {:status => @game.status, :public_enemy_mode => @game.public_enemy_mode ? 'on' : 'off'},
+                  :news => @game.notes.order(created_at: :desc)}
+  end
+
   def profile
     if current_user
       @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
@@ -24,29 +29,48 @@ class GamesController < ApplicationController
 
   def roster
     players = @game.players
-    @gamemakers = players.where(role: Player::ROLE_GAMEMAKER).sort_by { |p| [p.committee, p.user.name]}
-    @assassins = players.where(role: [Player::ROLE_ASSASSIN_LIVE, Player::ROLE_ASSASSIN_DEAD]).sort_by { |p| [p.committee, p.user.name]}
-    @spectators = players.where(role: Player::ROLE_SPECTATOR).sort_by { |p| [p.committee, p.user.name]}
+    gamemakers = players.where(role: Player::ROLE_GAMEMAKER).sort_by { |p| [p.committee, p.user.name]}
+    assassins = players.where(role: [Player::ROLE_ASSASSIN_LIVE, Player::ROLE_ASSASSIN_DEAD]).sort_by { |p| [p.committee, p.user.name]}
+    spectators = players.where(role: Player::ROLE_SPECTATOR).sort_by { |p| [p.committee, p.user.name]}
+    @gamemakers_info = gamemakers.map { |p| { :committee => p.committee, :name => p.user.name } }
+    @assassins_info = assassins.map { |p| { :committee => p.committee, :name => p.user.name } }
+    @spectators_info = spectators.map { |p| { :committee => p.committee, :name => p.user.name } }
     if current_user
       @current_player = players.find_by(user_id: current_user.id)
     end
   end
 
+  def roster_json
+    roster
+    render json: { :gamemakers => @gamemakers_info, :assassins => @assassins_info, :spectators => @spectators_info }
+  end
+
   def leaderboard
-    @assassins_all_ranked = Player.where(game_id: @game.id, role: [Player::ROLE_ASSASSIN_LIVE, Player::ROLE_ASSASSIN_DEAD]).sort_by { |p| [-1 * (p.points || 0), p.is_assassin_live ? 0 : 1, p.committee, p.user.name]}
+    assassins_ranked = Player.where(game_id: @game.id, role: [Player::ROLE_ASSASSIN_LIVE, Player::ROLE_ASSASSIN_DEAD]).sort_by { |p| [-1 * (p.points || 0), p.is_assassin_live ? 0 : 1, p.committee, p.user.name]}
+    @assassins_ranked_info = assassins_ranked.map { |a| { :committee => a.committee, :name => a.user.name, :points => a.points, :alive => a.is_assassin_live }}
     committee_points_hash = Hash.new
-    @assassins_all_ranked.each do |assassin|
+    assassins_ranked.each do |assassin|
       if committee_points_hash.key?(assassin.committee)
-        committee_points_hash[assassin.committee][0] += assassin.points
-        committee_points_hash[assassin.committee][1] += 1
+        committee_points_hash[assassin.committee][:points_total] += assassin.points
+        committee_points_hash[assassin.committee][:members_count] += 1
       else
-        committee_points_hash[assassin.committee] = [assassin.points, 1]
+        committee_points_hash[assassin.committee] = {:points_total => assassin.points, :members_count => 1}
       end
     end
-    @committees_ranked =  committee_points_hash.sort_by{|committee, points_and_count| [-1 * (points_and_count[0].to_f / points_and_count[1]), committee]}
+    committee_points_hash.each do |committee, points_and_count|
+      points_and_count[:points_avg] = (points_and_count[:points_total].to_f / points_and_count[:members_count]).round(3)
+      points_and_count.delete(:members_count)
+    end
+    committees_ranked_array = committee_points_hash.sort_by { |committee, points| [-1 * (points[:points_avg]), committee] }
+    @committees_ranked_info = committees_ranked_array.map { |c, p| {:committee => c, :points_total => p[:points_total], :points_avg => p[:points_avg]} }
     if current_user
       @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
     end
+  end
+
+  def leaderboard_json
+    leaderboard
+    render json: { :committees => @committees_ranked_info, :assassins => @assassins_ranked_info }
   end
 
   def manage
@@ -105,10 +129,11 @@ class GamesController < ApplicationController
       else
         next
       end
+      time_deactivated_string = assignment.time_deactivated.to_s
       if @current_player and @current_player.is_gamemaker
-        @history_info_all.append([assignment.time_deactivated.to_s, killer_name, victim_name, kill_type])
+        @history_info_all.push({:time_assassinated => time_deactivated_string, :killer_name => killer_name, :victim_name => victim_name, :kill_type => kill_type})
       end
-      @history_info_public.append([assignment.time_deactivated.to_s, victim_name])
+      @history_info_public.push({:time_assassinated => time_deactivated_string, :victim_name => victim_name})
     end
     if @current_player and @current_player.is_assassin
       @history_info_self = Array.new
@@ -118,11 +143,11 @@ class GamesController < ApplicationController
         .order(time_deactivated: :desc)
       history_assignments_self.each do |assignment|
         if assignment.is_completed
-          @history_info_self.push([assignment.time_deactivated.to_s, Player.find(assignment.target_id).user.name, Assignment::FORWARD_KILL_TEXT])
+          @history_info_self.push({:time_assassinated => assignment.time_deactivated.to_s, :victim_name => Player.find(assignment.target_id).user.name, :kill_type => Assignment::FORWARD_KILL_TEXT})
         elsif assignment.is_backfired
-          @history_info_self.push([assignment.time_deactivated.to_s, Player.find(assignment.assassin_id).user.name, Assignment::REVERSE_KILL_TEXT])
+          @history_info_self.push({:time_assassinated => assignment.time_deactivated.to_s, :victim_name => Player.find(assignment.assassin_id).user.name, :kill_type => Assignment::REVERSE_KILL_TEXT})
         elsif assignment.is_executed
-          @history_info_self.push([assignment.time_deactivated.to_s, Player.find(assignment.target_id).user.name, Assignment::PUBLIC_ENEMY_KILL_TEXT])
+          @history_info_self.push({:time_assassinated => assignment.time_deactivated.to_s, :victim_name => Player.find(assignment.target_id).user.name, :kill_type => Assignment::PUBLIC_ENEMY_KILL_TEXT})
         end
       end
 
@@ -133,22 +158,31 @@ class GamesController < ApplicationController
         .order(time_deactivated: :desc)
       death_assignments.each do |assignment|
         if assignment.is_completed
-          @deaths_info.push([assignment.time_deactivated.to_s, Player.find(assignment.assassin_id).user.name, Assignment::FORWARD_KILL_TEXT])
+          @deaths_info.push({:time_assassinated => assignment.time_deactivated.to_s, :killer_name => Player.find(assignment.assassin_id).user.name, :kill_type => Assignment::FORWARD_KILL_TEXT})
         elsif assignment.is_backfired
-          @deaths_info.push([assignment.time_deactivated.to_s, Player.find(assignment.target_id).user.name, Assignment::REVERSE_KILL_TEXT])
+          @deaths_info.push({:time_assassinated => assignment.time_deactivated.to_s, :killer_name => Player.find(assignment.target_id).user.name, :kill_type => Assignment::REVERSE_KILL_TEXT})
         elsif assignment.is_executed
-          @deaths_info.push([assignment.time_deactivated.to_s, Player.find(assignment.assassin_id).user.name, Assignment::PUBLIC_ENEMY_KILL_TEXT])
+          @deaths_info.push({:time_assassinated => assignment.time_deactivated.to_s, :killer_name => Player.find(assignment.assassin_id).user.name, :kill_type => Assignment::PUBLIC_ENEMY_KILL_TEXT})
         end
       end
     end
   end
 
+  def history_json
+    history
+    render json: {:history_info_public => @history_info_public}
+  end
+
   def sponsors
     @sponsors = @game.players.where(role: [Player::ROLE_GAMEMAKER, Player::ROLE_ASSASSIN_DEAD]).sort_by { |p| [-1 * p.sponsor_points, p.user.name]}
-    @notes = @game.notes.order(created_at: :desc)
     if current_user
       @current_player = Player.find_by(user_id: current_user.id, game_id: @game.id)
     end
+  end
+
+  def sponsors_json
+    sponsors
+    render json: @sponsors.map { |s| {:name => s.user.name, :sponsor_points => s.sponsor_points} }
   end
   
   def update_sponsor_points

@@ -23,10 +23,10 @@
               <% for i in 0..@history_info_all.length - 1 %>
                 <tr>
                   <th scope="row"><%= @history_info_all.length - i%></th>
-                  <td><%= @history_info_all[i][0] %></td>
-                  <td><%= @history_info_all[i][1] %></td>
-                  <td><%= @history_info_all[i][2] %></td>
-                  <td><%= @history_info_all[i][3] %></td>
+                  <td><%= @history_info_all[i][:time_assassinated] %></td>
+                  <td><%= @history_info_all[i][:killer_name] %></td>
+                  <td><%= @history_info_all[i][:victim_name] %></td>
+                  <td><%= @history_info_all[i][:kill_type] %></td>
                 </tr>
               <% end %>
               </tbody>
@@ -50,9 +50,9 @@
             <% for i in 0..@deaths_info.length - 1 %>
               <tr>
                 <th scope="row"><%= @deaths_info.length - i %></th>
-                <td><%= @deaths_info[i][0] %></td>
-                <td><%= @deaths_info[i][1] %></td>
-                <td><%= @deaths_info[i][2] %></td>
+                <td><%= @deaths_info[i][:time_assassinated] %></td>
+                <td><%= @deaths_info[i][:killer_name] %></td>
+                <td><%= @deaths_info[i][:kill_type] %></td>
               </tr>
             <% end %>
             </tbody>
@@ -75,9 +75,9 @@
               <% for i in 0..@history_info_self.length - 1 %>
                 <tr>
                   <th scope="row"><%= @history_info_self.length - i %></th>
-                  <td><%= @history_info_self[i][0] %></td>
-                  <td><%= @history_info_self[i][1] %></td>
-                  <td><%= @history_info_self[i][2] %></td>
+                  <td><%= @history_info_self[i][:time_assassinated] %></td>
+                  <td><%= @history_info_self[i][:victim_name] %></td>
+                  <td><%= @history_info_self[i][:kill_type] %></td>
                 </tr>
               <% end %>
               </tbody>
@@ -101,8 +101,8 @@
           <% for i in 0..@history_info_public.length - 1 %>
             <tr>
               <th scope="row"><%= @history_info_public.length - i %></th>
-              <td><%= @history_info_public[i][0] %></td>
-              <td><%= @history_info_public[i][1] %></td>
+              <td><%= @history_info_public[i][:time_assassinated] %></td>
+              <td><%= @history_info_public[i][:victim_name] %></td>
             </tr>
           <% end %>
           </tbody>

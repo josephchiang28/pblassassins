@@ -6,39 +6,39 @@
     <div class="container-fluid">
       <h1>Roster</h1>
       <div class="col-md-4 padding-right-only">
-        <h3>All Assassins: <%= @assassins.length %></h3>
+        <h3>All Assassins: <%= @assassins_info.length %></h3>
         <table class="table table-sm">
           <tbody>
-          <% @assassins.each do |assassin| %>
+          <% @assassins_info.each do |assassin| %>
             <tr>
-              <td><%= '[' + assassin.committee + ']' %></td>
-              <td><%= assassin.user.name %></td>
+              <td><%= '[' + assassin[:committee] + ']' %></td>
+              <td><%= assassin[:name] %></td>
             </tr>
           <% end %>
           </tbody>
         </table>
       </div>
       <div class="col-md-4 padding-right-only">
-        <h3>All Gamemakers: <%= @gamemakers.length %></h3>
+        <h3>All Gamemakers: <%= @gamemakers_info.length %></h3>
         <table class="table table-sm">
           <tbody>
-          <% @gamemakers.each do |gamemaker| %>
+          <% @gamemakers_info.each do |gamemaker| %>
             <tr>
-              <td><%= '[' + gamemaker.committee + ']' %></td>
-              <td><%= gamemaker.user.name %></td>
+              <td><%= '[' + gamemaker[:committee] + ']' %></td>
+              <td><%= gamemaker[:name] %></td>
             </tr>
           <% end %>
           </tbody>
         </table>
       </div>
       <div class="col-md-4 padding-right-only">
-        <h3>All Spectators: <%= @spectators.length %></h3>
+        <h3>All Spectators: <%= @spectators_info.length %></h3>
         <table class="table table-sm">
           <tbody>
-          <% @spectators.each do |spectator| %>
+          <% @spectators_info.each do |spectator| %>
             <tr>
-              <td><%= '[' + spectator.committee + ']' %></td>
-              <td><%= spectator.user.name %></td>
+              <td><%= '[' + spectator[:committee] + ']' %></td>
+              <td><%= spectator[:name] %></td>
             </tr>
           <% end %>
           </tbody>

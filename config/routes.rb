@@ -15,13 +15,18 @@ Rails.application.routes.draw do
   # post 'games/mock_user_login', to: 'sessions#mock_user_login', as: :mock_user_login # For testing purposes only, remove or comment out later
 
   get 'games/:name' => 'games#index', as: :game_index
+  get 'games/:name/json' => 'games#index_json'
   get 'games/:name/profile' => 'games#profile', as: :game_profile
   get 'games/:name/roster' => 'games#roster', as: :game_roster
+  get 'games/:name/roster/json' => 'games#roster_json'
   get 'games/:name/leaderboard' => 'games#leaderboard', as: :game_leaderboard
+  get 'games/:name/leaderboard/json' => 'games#leaderboard_json'
   get 'games/:name/assignments' => 'assignments#show', as: :show_assignments
   get 'games/:name/manage' => 'games#manage', as: :game_manage
   get 'games/:name/history' => 'games#history', as: :game_history
+  get 'games/:name/history/json' => 'games#history_json'
   get 'games/:name/sponsors' => 'games#sponsors', as: :game_sponsors
+  get 'games/:name/sponsors/json' => 'games#sponsors_json'
   get 'games/:name/rules' => 'games#rules', as: :game_rules
   post 'games/:name/generate_assignments' => 'assignments#generate_assignments', as: :generate_assignments
   post 'games/:name/activate_assignments' => 'assignments#activate_assignments', as: :activate_assignments

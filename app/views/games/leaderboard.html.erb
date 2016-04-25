@@ -6,7 +6,7 @@
     <div class="container-fluid">
       <h1>Leaderboard</h1>
       <div class="col-md-5 padding-right-only">
-        <h3>Committees: <%= @committees_ranked.length %></h3>
+        <h3>Committees: <%= @committees_ranked_info.length %></h3>
         <table class="table table-sm">
           <thead>
           <tr>
@@ -18,30 +18,27 @@
           </thead>
           <tbody>
             <% tied_rank = 1 %>
-            <% avg_points_prev = -1 %>
-            <% for i in 0..@committees_ranked.length - 1 %>
-              <% avg_points_curr = @committees_ranked[i][1][0].to_f / @committees_ranked[i][1][1] %>
+            <% for i in 0..@committees_ranked_info.length - 1 %>
               <tr>
                 <th scope="row">
-                  <% if i > 0 and avg_points_prev > avg_points_curr %>
+                  <% if i > 0 and @committees_ranked_info[i-1][:points_avg] > @committees_ranked_info[i][:points_avg] %>
                     <% tied_rank = i + 1 %>
                     <%= i + 1 %>
                   <% else %>
                     <%= tied_rank %>
                   <% end %>
                 </th>
-                <td><%= @committees_ranked[i][0] %></td>
-                <td><%= @committees_ranked[i][1][0] %></td>
-                <td><%= avg_points_curr.round(3) %></td>
+                <td><%= @committees_ranked_info[i][:committee] %></td>
+                <td><%= @committees_ranked_info[i][:points_total] %></td>
+                <td><%= @committees_ranked_info[i][:points_avg] %></td>
               </tr>
-              <% avg_points_prev = avg_points_curr %>
             <% end %>
           </tbody>
         </table>
       </div>
       <div class="col-md-5 padding-right-only">
-        <% assassins_live_count = @assassins_all_ranked.count{ |a| a.is_assassin_live } %>
-        <h3>Assassins: <%= assassins_live_count %> Alive | <%= @assassins_all_ranked.length - assassins_live_count %> Dead</h3>
+        <% assassins_live_count = @assassins_ranked_info.count{ |a| a[:alive] } %>
+        <h3>Assassins: <%= assassins_live_count %> Alive | <%= @assassins_ranked_info.length - assassins_live_count %> Dead</h3>
         <table class="table table-sm">
           <thead>
           <tr>
@@ -53,23 +50,23 @@
           </thead>
           <tbody>
           <% tied_rank = 1 %>
-          <% for i in 0..@assassins_all_ranked.length - 1 %>
-            <% if @assassins_all_ranked[i].is_assassin_live %>
+          <% for i in 0..@assassins_ranked_info.length - 1 %>
+            <% if @assassins_ranked_info[i][:alive] %>
               <tr>
             <% else %>
               <tr style="color: silver;">
             <% end %>
               <th scope="row">
-                <% if i > 0 and @assassins_all_ranked[i-1].points > @assassins_all_ranked[i].points %>
+                <% if i > 0 and @assassins_ranked_info[i-1][:points] > @assassins_ranked_info[i][:points] %>
                   <% tied_rank = i + 1 %>
                   <%= i + 1 %>
                 <% else %>
                   <%= tied_rank %>
                 <% end %>
               </th>
-              <td><%= '[' + @assassins_all_ranked[i].committee + ']' %></td>
-              <td><%= @assassins_all_ranked[i].user.name %></td>
-              <td><%= @assassins_all_ranked[i].points %></td>
+              <td><%= '[' + @assassins_ranked_info[i][:committee] + ']' %></td>
+              <td><%= @assassins_ranked_info[i][:name] %></td>
+              <td><%= @assassins_ranked_info[i][:points] %></td>
             </tr>
           <% end %>
           </tbody>
